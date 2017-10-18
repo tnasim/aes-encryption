@@ -5,9 +5,21 @@
 
 #include <iostream>
 #include <stdio.h>
+#include "util/util.h"
 
 int main(int argc, char** argv)
 {
-	std::cout << "Testing" << std::endl;
+	if (argc < 3) 
+	{
+		std::cout << "Need arguments: <key-size> <text to encrypt>"
+		exit(1);
+	}
+	int keysize = atoi.(argv[1]);
+
+
+	unsigned char[][] state;
+	char foo[4] = {'f','o','o',0};
+	std::string output = util::charToHex(foo, 4);
+	std::cout << "Testing: " << output << std::endl;
 	return 0;
 }
