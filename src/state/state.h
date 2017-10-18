@@ -14,14 +14,14 @@ private:
 	/**
 	 * each state is a 4x4 block of bytes
 	 */
-	unsigned char[4][4] array;
+	unsigned char array[4][4];
 
 public:
 
 	/**
 	 * Takes in one 16-byte "block"
 	 */
-	state(char[16] block);
+	state(char block[16]);
 
 	/**
 	 * retrieves byte at position pos.
