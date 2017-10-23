@@ -21,7 +21,7 @@ public:
 	/**
 	 * Takes in one 16-byte "block"
 	 */
-	state(char block[16]);
+	state(unsigned char block[16]);
 
 	/**
 	 * retrieves byte at position pos.
@@ -32,6 +32,12 @@ public:
 	 * Swaps byte at position 'b1'and position 'b2'
 	 */
 	void swapbytes(state_pos b1, state_pos b2);
+
+	/**
+	 * Build an array and return the pointer to the
+	 * first element in the array.
+	 */
+	unsigned char* getword(int col);
 
 };
 
