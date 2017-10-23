@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 
-std::string util::charToHex(char c[], int size)
+std::string util::charToHex(char *c, int size)
 {
 	std::stringstream ss;
 	for (int i = 0; i <size; i++)

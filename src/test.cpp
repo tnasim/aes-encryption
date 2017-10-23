@@ -6,20 +6,22 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 #include "util/util.h"
 
 int main(int argc, char** argv)
 {
-	if (argc < 3) 
+	if (argc < 2) 
 	{
-		std::cout << "Need arguments: <key-size> <text to encrypt>" << std::endl;
+		std::cout << "Need arguments: <text to encrypt>" << std::endl;
 		exit(1);
 	}
-	int keysize = atoi(argv[1]);
 
+	char* input = argv[1];
+	int size = strlen(input);
+	//char foo[4] = {'f','o','o',0};
 
-	char foo[4] = {'f','o','o',0};
-	std::string output = util::charToHex(foo, 4);
+	std::string output = util::charToHex(input, size);
 	std::cout << "Testing: " << output << std::endl;
 	return 0;
 }
