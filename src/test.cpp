@@ -10,6 +10,8 @@
 #include "util/util.h"
 #include "../includes/aes.h"
 
+const int KEY_SIZE = 128;
+
 int main(int argc, char** argv)
 {
 	if (argc < 2) 
@@ -25,13 +27,14 @@ int main(int argc, char** argv)
 	std::string output = util::charToHex(input, size);
 	std::cout << "Testing: " << output << std::endl;
     
-    char key[32] = {0};
-    char in[32] = {0};
-    char out[32] = {0};
-    char w[32] = {0};
+    unsigned char key[32] = {0};
+    unsigned char in[32] = {0};
+    unsigned char out[32] = {0};
+    unsigned char w[32] = {0};
     
     // Test AES class:
-    AES::AES *aes = new AES::AES(key);
+    AES::AES *aes = new AES::AES(key, KEY_SIZE);
     aes->Cipher(in, out, w);
+	printf("%s", out);
 	return 0;
 }
