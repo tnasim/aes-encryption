@@ -8,7 +8,7 @@ struct state_pos {
 
 };
 
-class state {
+class State {
 
 private:
 	/**
@@ -21,7 +21,7 @@ public:
 	/**
 	 * Takes in one 16-byte "block"
 	 */
-	state(unsigned char block[16]);
+	State(unsigned char block[16]);
 
 	/**
 	 * retrieves byte at position pos.

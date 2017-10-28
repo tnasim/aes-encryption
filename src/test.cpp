@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include "util/util.h"
+#include "../includes/aes.h"
 
 int main(int argc, char** argv)
 {
@@ -23,5 +24,14 @@ int main(int argc, char** argv)
 
 	std::string output = util::charToHex(input, size);
 	std::cout << "Testing: " << output << std::endl;
+    
+    char key[32] = {0};
+    char in[32] = {0};
+    char out[32] = {0};
+    char w[32] = {0};
+    
+    // Test AES class:
+    AES::AES *aes = new AES::AES(key);
+    aes->Cipher(in, out, w);
 	return 0;
 }
