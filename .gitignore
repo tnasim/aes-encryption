@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+bin/*
+
+# Mac .DS_Store file
+.DS_Store
+*.DS_Store
+
+# xCode auto generated files
+*.xcodeproj/
