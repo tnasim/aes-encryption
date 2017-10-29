@@ -60,8 +60,9 @@ unsigned char* State::getOutput() {
 void State::display() {
 	int i, j;
 	for(i = 0; i < 4; i++) {
+		printf("\t");
 		for(j = 0; j < 4; j++) {
-			printf("%c ", s[i][j]);
+			printf("%02x ", s[i][j]);
 		}
 		printf("\n");
 	}

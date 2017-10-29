@@ -79,9 +79,7 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	*/
 	 
 	unsigned char* out = state->getOutput();
-	std::copy(out, out+AES::WORD_SIZE, output);
-	printf("Output: %s\n", output);
-	//strcpy(output, out);
+	std::copy(out, (out + AES::WORD_SIZE), output);
 	
 	printf("Cipher -- not fully implemented yet\n");
 }
