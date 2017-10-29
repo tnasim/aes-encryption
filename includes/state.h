@@ -40,6 +40,11 @@ public:
 	unsigned char* getWord(int col);
 	
 	unsigned char* getOutput();
+	
+	/**
+	 * Display the current contents of the state
+	 */
+	void display();
 
 };
 

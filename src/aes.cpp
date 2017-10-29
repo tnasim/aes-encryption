@@ -55,6 +55,10 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	// build the 'state' using input:
 	State *state = new State::State(input);
 	
+	printf("State copied: \n");
+	state->display();
+	printf("\n");
+	
 	//TODO: AddRoundKey(state, w[0, Nb-1]) // Sec. 5.1.4
 	
 	//TODO: perform other operations for each round:

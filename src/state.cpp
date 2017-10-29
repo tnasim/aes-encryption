@@ -1,4 +1,5 @@
 /* Implementation */
+#include <stdio.h>
 #include <stdlib.h>
 #include "../includes/state.h"
 
@@ -54,4 +55,14 @@ unsigned char* State::getOutput() {
 	}
 	
 	return output;
+}
+
+void State::display() {
+	int i, j;
+	for(i = 0; i < 4; i++) {
+		for(j = 0; j < 4; j++) {
+			printf("%c ", s[i][j]);
+		}
+		printf("\n");
+	}
 }

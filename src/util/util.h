@@ -5,7 +5,8 @@
 
 namespace util
 {
-	std::string charToHex(char c[], int size);
+	std::string charToHex(unsigned char*, int size);
+	unsigned char* hexToChar(std::string s);
 }
 
 #endif
