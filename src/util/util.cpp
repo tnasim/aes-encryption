@@ -2,13 +2,15 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 std::string util::charToHex(unsigned char *c, int size)
 {
 	std::stringstream ss;
+	ss << std::hex << std::setfill('0');
 	for (int i = 0; i <size; i++)
 	{
-		ss << std::hex << (int)c[i];
+		ss << std::setw(2) << static_cast<unsigned>(c[i]);
 		if (i < size-1)
 			ss << " ";
 	}
