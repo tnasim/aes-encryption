@@ -22,7 +22,8 @@ AES::AES(unsigned char key[], int keySize) {
  * Perform 'SubBytes' operation on the state.
  */
 void AES::SubBytes(State *state) {
-    printf("SubBytes - not defined yet\n");
+	state->SubBytes();
+    //printf("SubBytes - not defined yet\n");
 }
 
 /**
@@ -55,9 +56,21 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	// build the 'state' using input:
 	State *state = new State::State(input);
 	
+	
 	printf("State copied: \n");
 	state->display();
 	printf("\n");
+	
+	
+			// ---------------------------------------------------------------
+			// SubBytes for test purpose --- this code block SHOULD BE REMOVED:
+			// ---------------------------------------------------------------
+			/*printf("SubBytes Test: \n");
+			AES::SubBytes(state);
+			state->display();
+			printf("\n");*/
+			// ---------------------------------------------------------------
+	
 	
 	//TODO: AddRoundKey(state, w[0, Nb-1]) // Sec. 5.1.4
 	

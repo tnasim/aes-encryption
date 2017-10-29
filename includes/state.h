@@ -1,7 +1,8 @@
 #ifndef STATE_H
 #define STATE_H
+#include "../src/util/util.h"
 
-
+using namespace util;
 struct state_pos {
 	int col;
 	int row;
@@ -16,12 +17,17 @@ private:
 	 */
 	unsigned char s[4][4];
 
+	// 5.1.1: Fig. 7
+	static const char sbox[16][16][3];
 public:
+	
 
 	/**
 	 * Takes in the input byte array and initializes the 'state' array with this input.
 	 */
 	State(unsigned char input[]);
+	
+	~State();
 
 	/**
 	 * retrieves byte at position pos.
@@ -40,6 +46,26 @@ public:
 	unsigned char* getWord(int col);
 	
 	unsigned char* getOutput();
+	
+	/**
+	 * Performs 'SubBytes' operation on this state
+	 */
+	void SubBytes();
+	
+	/**
+	 * Performs 'ShiftRows' operation on this state
+	 */
+	void ShiftRows();
+	
+	/**
+	 * Performs 'MixColumns' operation on this state
+	 */
+	void MixColumns();
+	
+	/**
+	 * Performs 'AddRoundKey' operation on this state
+	 */
+	void AddRoundKey(Word w[]);
 	
 	/**
 	 * Display the current contents of the state

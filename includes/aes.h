@@ -4,8 +4,10 @@
 #include <string.h>
 #include <algorithm>
 #include "../includes/state.h"
+#include "../src/util/util.h"
 
 using namespace std;
+using namespace util;
 
 class AES {
     
@@ -38,6 +40,8 @@ private:
      * Perform 'AddRoundKey' operation on the state.
      */
     void AddRoundKey(State *state);
+	
+	//void KeyExpansion(unsigned char key[4*Nk], word w[Nb*(Nr+1)], Nk)
 
 public:
 
