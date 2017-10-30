@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     unsigned char w[16] = {0};
     
     // Test AES class:
-    AES::AES *aes = new AES::AES(key, KEY_SIZE);
+    AES *aes = new AES(key, KEY_SIZE);
     aes->Cipher(in, out, w);
 	
 	std::string out_str = util::charToHex(out, 16);
@@ -145,7 +145,7 @@ bool testSubBytes(std::string input, std::string expected_output) {
 	
 	unsigned char *in = util::hexToChar(input);
 	
-	State *state = new State::State(in);
+	State *state = new State(in);
 	state->SubBytes();
 	unsigned char *out = state->getOutput();
 	
@@ -170,7 +170,7 @@ bool testShiftRows(std::string input, std::string expected_output) {
 	
 	unsigned char *in = util::hexToChar(input);
 	
-	State *state = new State::State(in);
+	State *state = new State(in);
 	state->ShiftRows();
 	unsigned char *out = state->getOutput();
 	
@@ -195,7 +195,7 @@ bool testMixColumns(std::string input, std::string expected_output) {
 	
 	unsigned char *in = util::hexToChar(input);
 	
-	State *state = new State::State(in);
+	State *state = new State(in);
 	state->MixColumns();
 	unsigned char *out = state->getOutput();
 	

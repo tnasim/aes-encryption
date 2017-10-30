@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <algorithm>
+#include <stdio.h>
 #include "../includes/state.h"
 #include "../src/util/util.h"
 

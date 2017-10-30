@@ -54,7 +54,7 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
 	
 	// build the 'state' using input:
-	State *state = new State::State(input);
+	State *state = new State(input);
 	
 	
 	printf("Initial 'state': \n");

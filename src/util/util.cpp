@@ -2,7 +2,9 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <algorithm>
 #include <iomanip>
+#include <cstdio>
 
 std::string util::charToHex(unsigned char *c, int size)
 {
