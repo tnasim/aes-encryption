@@ -138,6 +138,31 @@ void State::ShiftRows() {
 	
 }
 
+/**
+ * Performs 'MixColumns()' operation on current state
+ *
+ * Reference: FIPS-197, section 5.1.3
+ */
+void State::MixColumns() {
+	
+	//TODO:  need to implement
+	return;
+}
+
+/**
+ * Performs 'AddRoundKey' operation on this state
+ *
+ * Reference: FIPS-197, section 5.1.4
+ */
+void State::AddRoundKey(Word w[]) {
+	
+	//TODO:  need to implement
+	return;
+}
+
+/**
+ * Public method that displays the current contents of the 'state'
+ */
 void State::display() {
 	if(display_style==DISPLAY_FANCY) {
 		displayFancy();
@@ -154,6 +179,10 @@ void State::display() {
 	}
 }
 
+/**
+ * Private method that displays the current contents of the 'state'
+ * This method is supposed to be called by 'display()' method if 'fancy' display is needed.
+ */
 void State::displayFancy() {
 	int i, j;
 	printf("\t ");

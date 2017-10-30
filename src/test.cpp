@@ -27,6 +27,7 @@ using namespace util;
 bool runAllTests();
 bool testSubBytes(std::string input, std::string expected_output);
 bool testShiftRows(std::string input, std::string expected_output);
+bool testMixColumns(std::string input, std::string expected_output);
 
 int main(int argc, char** argv)
 {
@@ -115,6 +116,24 @@ bool runAllTests() {
 						  "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53");
 	
+	
+	// MixColumns tests:
+	// Appendix B: round 1
+	passed = passed &&
+			testMixColumns(
+						  "d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5", //input
+						  "04 66 81 e5 e0 cb 19 9a 48 f8 d3 7a 28 06 26 4c"); //expected output
+	// Appendix B: round 2
+	passed = passed &&
+			testMixColumns(
+						  "49 db 87 3b 45 39 53 89 7f 02 d2 f1 77 de 96 1a",
+						  "58 4d ca f1 1b 4b 5a ac db e7 ca a8 1b 6b b0 e5");
+	// Appendix B: round 5
+	passed = passed &&
+			testMixColumns(
+						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53",
+						  "25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0");
+	
 	return passed;
 	
 }
@@ -158,6 +177,31 @@ bool testShiftRows(std::string input, std::string expected_output) {
 	std::string shifted_str = util::charToHex(out, 16);
 	std::cout << "\tOutput: " << shifted_str << endl;
 	if(!shifted_str.compare(expected_output)) {
+		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		passed = true;
+	} else {
+		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		passed = false;
+	}
+	free(out);
+	std::cout << endl;
+	return passed;
+}
+
+bool testMixColumns(std::string input, std::string expected_output) {
+	bool passed = false;
+	std::cout << "test - MixColumns() -->" << endl;
+	std::cout << "\tInput:  " << input << endl;
+	
+	unsigned char *in = util::hexToChar(input);
+	
+	State *state = new State::State(in);
+	state->MixColumns();
+	unsigned char *out = state->getOutput();
+	
+	std::string mixed_str = util::charToHex(out, 16);
+	std::cout << "\tOutput: " << mixed_str << endl;
+	if(!mixed_str.compare(expected_output)) {
 		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
 		passed = true;
 	} else {
