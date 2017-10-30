@@ -24,8 +24,9 @@ std::string sample_input		= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
 
 using namespace util;
 
-void runAllTests();
-void testSubBytes(std::string input, std::string expected_output);
+bool runAllTests();
+bool testSubBytes(std::string input, std::string expected_output);
+bool testShiftRows(std::string input, std::string expected_output);
 
 int main(int argc, char** argv)
 {
@@ -40,7 +41,11 @@ int main(int argc, char** argv)
 	//char foo[4] = {'f','o','o',0};
 
 	
-	runAllTests();
+	if(runAllTests()) {
+		std::cout << "\033[1;32mALL TESTS PASSED\033[0m\n" << endl;
+	} else {
+		std::cout << "SOME TEST(S) FAILED" << endl;
+	}
 	 
 	unsigned char* key = util::hexToChar(sample_key);
 	
@@ -68,18 +73,56 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void runAllTests() {
+/**
+ * Tests individual methods using sample inputs.
+ * Test sample values are taken from FIPS-197 specification.
+ */
+bool runAllTests() {
+	bool passed = true;
 	
 	// SubBytes tests:
-	testSubBytes("19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08", "d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30");
-	testSubBytes("a4 9c 7f f2 68 9f 35 2b 6b 5b ea 43 02 6a 50 49", "49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b");
-	testSubBytes("e0 92 7f e8 c8 63 63 c0 d9 b1 35 50 85 b8 be 01", "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c");
+	// Appendix B: round 1
+	passed = passed &&
+			testSubBytes(
+						 "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08", //input
+						 "d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30"); //expected output
+	// Appendix B: round 2
+	passed = passed &&
+			testSubBytes(
+						 "a4 9c 7f f2 68 9f 35 2b 6b 5b ea 43 02 6a 50 49",
+						 "49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b");
+	// Appendix B: round 5
+	passed = passed &&
+			testSubBytes(
+						 "e0 92 7f e8 c8 63 63 c0 d9 b1 35 50 85 b8 be 01",
+						 "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c");
+	
+	
+	// ShiftRows tests:
+	// Appendix B: round 1
+	passed = passed &&
+			testShiftRows(
+						  "d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30", //input
+						  "d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5"); //expected output
+	// Appendix B: round 2
+	passed = passed &&
+			testShiftRows(
+						  "49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b",
+						  "49 db 87 3b 45 39 53 89 7f 02 d2 f1 77 de 96 1a");
+	// Appendix B: round 5
+	passed = passed &&
+			testShiftRows(
+						  "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
+						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53");
+	
+	return passed;
 	
 }
 
-void testSubBytes(std::string input, std::string expected_output) {
+bool testSubBytes(std::string input, std::string expected_output) {
+	bool passed = false;
 	std::cout << "test - SubBytes() -->" << endl;
-	std::cout << "\tInput: " << input << endl;
+	std::cout << "\tInput:  " << input << endl;
 	
 	unsigned char *in = util::hexToChar(input);
 	
@@ -91,11 +134,37 @@ void testSubBytes(std::string input, std::string expected_output) {
 	std::cout << "\tOutput: " << substituted_str << endl;
 	if(!substituted_str.compare(expected_output)) {
 		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
-		//std::cout << "\t - PASSED" << endl;
+		passed = true;
 	} else {
 		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
-		//std::cout << "\t" << endl;
+		passed = false;
 	}
 	free(out);
 	std::cout << endl;
+	return passed;
+}
+
+bool testShiftRows(std::string input, std::string expected_output) {
+	bool passed = false;
+	std::cout << "test - ShiftRows() -->" << endl;
+	std::cout << "\tInput:  " << input << endl;
+	
+	unsigned char *in = util::hexToChar(input);
+	
+	State *state = new State::State(in);
+	state->ShiftRows();
+	unsigned char *out = state->getOutput();
+	
+	std::string shifted_str = util::charToHex(out, 16);
+	std::cout << "\tOutput: " << shifted_str << endl;
+	if(!shifted_str.compare(expected_output)) {
+		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		passed = true;
+	} else {
+		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		passed = false;
+	}
+	free(out);
+	std::cout << endl;
+	return passed;
 }

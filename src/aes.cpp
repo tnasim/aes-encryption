@@ -57,19 +57,9 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	State *state = new State::State(input);
 	
 	
-	printf("State copied: \n");
+	printf("Initial 'state': \n");
 	state->display();
 	printf("\n");
-	
-	
-			// ---------------------------------------------------------------
-			// SubBytes for test purpose --- this code block SHOULD BE REMOVED:
-			// ---------------------------------------------------------------
-			/*printf("SubBytes Test: \n");
-			AES::SubBytes(state);
-			state->display();
-			printf("\n");*/
-			// ---------------------------------------------------------------
 	
 	
 	//TODO: AddRoundKey(state, w[0, Nb-1]) // Sec. 5.1.4
@@ -90,7 +80,11 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	ShiftRows(state)
 	AddRoundKey(state, w[Nr*Nb, (Nr+1)*Nb-1])
 	*/
-	 
+	
+	printf("Final 'state': \n");
+	state->display();
+	printf("\n");
+	
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), output);
 	

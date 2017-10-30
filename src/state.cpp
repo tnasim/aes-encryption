@@ -40,6 +40,15 @@ State::~State() {
 	free(s);
 }
 
+void State::update(unsigned char sp[4][4]) {
+	int i, j;
+	for(i = 0; i < 4; i++) {
+		for(j = 0; j < 4; j++) {
+			s[i][j] = sp[i][j];
+		}
+	}
+}
+
 /**
  * retrieves byte at position pos.
  */
@@ -108,13 +117,66 @@ void State::SubBytes() {
 	}
 }
 
+/**
+ * Performs 'ShiftRows()' operation on current state
+ * Cyclically shifts (to the left) the last three rows
+ *
+ * Reference: FIPS-197, section 5.1.2
+ */
+void State::ShiftRows() {
+	int r, c, Nb = 4;
+	unsigned char sp[4][4];
+	unsigned char temp;
+	
+	for(r = 0; r < 4; r++) {
+		for(c = 0; c < 4; c++) {
+			sp[r][c] = s[r][ (c+r%Nb) % Nb ];
+		}
+	}
+	
+	update(sp); // update current state using the values new state sp;
+	
+}
+
 void State::display() {
+	if(display_style==DISPLAY_FANCY) {
+		displayFancy();
+		return;
+	}
+	
 	int i, j;
 	for(i = 0; i < 4; i++) {
 		printf("\t");
 		for(j = 0; j < 4; j++) {
 			printf("%02x ", s[i][j]);
 		}
+		printf("\n");
+	}
+}
+
+void State::displayFancy() {
+	int i, j;
+	printf("\t ");
+	for(j = 0; j < 3; j++) {
+		printf("---- ");
+	}
+	printf("----");
+	printf("\n");
+	
+	for(i = 0; i < 4; i++) {
+		printf("\t|");
+		for(j = 0; j < 4; j++) {
+			printf(" %02x |", s[i][j]);
+		}
+		printf("\n\t ");
+		for(j = 0; j < 3; j++) {
+			if(i<3) {
+				printf("----|");
+			} else {
+				printf("---- ");
+			}
+		}
+		printf("----");
 		printf("\n");
 	}
 }

@@ -2,6 +2,9 @@
 #define STATE_H
 #include "../src/util/util.h"
 
+#define		DISPLAY_NORMAL	0
+#define		DISPLAY_FANCY	1
+
 using namespace util;
 struct state_pos {
 	int col;
@@ -19,15 +22,25 @@ private:
 
 	// 5.1.1: Fig. 7
 	static const char sbox[16][16][3];
+	
+	/**
+	 * Display the current contents of the state (with lines)
+	 */
+	void displayFancy();
+	
 public:
 	
-
+	static int const display_style = DISPLAY_FANCY;
+	//static int const display_style = DISPLAY_NORMAL;
+	
 	/**
 	 * Takes in the input byte array and initializes the 'state' array with this input.
 	 */
 	State(unsigned char input[]);
 	
 	~State();
+	
+	void update(unsigned char sp[4][4]);
 
 	/**
 	 * retrieves byte at position pos.
