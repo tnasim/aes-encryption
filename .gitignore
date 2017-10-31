@@ -38,3 +38,8 @@ bin/*
 
 # xCode auto generated files
 *.xcodeproj/
+
+# eclipse auto generated files
+.cproject
+.project
+.settings/
