@@ -23,6 +23,11 @@ private:
 	}
 
 	/**
+	 * Key Schedule. Generated using the key.
+	 */
+	struct word *w;
+
+	/**
 	 * Perform 'SubBytes' operation on the state.
 	 */
 	void SubBytes(State *state);
@@ -42,7 +47,12 @@ private:
      */
     void AddRoundKey(State *state);
 	
-	//void KeyExpansion(unsigned char key[4*Nk], word w[Nb*(Nr+1)], Nk)
+	/**
+	 * Expands key 
+	 * key = new unsigned char[4*Nk]
+	 * w = new word[Nb*(Nr+1)]
+	 */
+	void KeyExpansion();
 
 public:
 

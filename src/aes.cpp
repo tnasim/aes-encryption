@@ -16,6 +16,8 @@ AES::AES(unsigned char key[], int keySize) {
 	Nk = keySize/AES::WORD_SIZE;
 	
 	Nr = Nk + 6; // if Key Length is 4, there will be 10 rounds.
+
+	w = new struct word[Nb*(Nr + 1)];
 }
 
 /**
@@ -45,6 +47,31 @@ void AES::MixColumns(State *state) {
  */
 void AES::AddRoundKey(State *state) {
     printf("AddRoundKey - not defined yet\n");
+}
+
+void AES::KeyExpansion() {
+	printf("Key Expansion - not defined yet\n");
+	//temporary word to hold a value
+	struct word temp;
+
+	int i = 0;
+	while (i < Nk)
+	{
+		w[i] = word(key_[4*i],key_[4*i+1],key_[4*i+2], key_[4*i+3]);
+		i++;
+	}
+
+	i = Nk;
+
+	while (i < Nb * (Nr + 1)) 
+	{
+		temp = w[i-1];
+		if (i%Nk == 0)
+		{
+			//temp = SubWord(RotWord(temp))^Rcon[i/Nk];
+		}
+	}
+	return;
 }
 
 /**

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <cstdio>
+#include "../../includes/state.h"
 
 std::string util::charToHex(unsigned char *c, int size)
 {
@@ -34,4 +35,26 @@ unsigned char* util::hexToChar(std::string s) {
 	char_arr[s.length()/2+1] = '\0';
 	return char_arr;
 	
+}
+
+void util::word::subWord() 
+{
+	for (int i = 0; i < 4; i++) 
+	{
+		unsigned char value = byte[i];
+		unsigned char upper_half = (unsigned char)(value>>4);
+		unsigned char lower_half = (unsigned char)(value & ((unsigned char)15));
+
+		const char sub_hex[3] = {
+			State::sbox[(int)upper_half][(int)lower_half][0],
+			State::sbox[(int)upper_half][(int)lower_half][1]
+		};
+		
+		unsigned sub;
+		sscanf( sub_hex, "%2x", &sub );
+		
+		// Update state-entry with substitute value.
+		byte[i] = (unsigned char)sub;
+	}
+	return;
 }
