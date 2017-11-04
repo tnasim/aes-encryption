@@ -248,6 +248,7 @@ bool testKeyExpansion(std::string key) {
 
 	AES *aes = new AES(k, 128);
 
+	delete(aes);
 	free(k);
 
 	return passed;

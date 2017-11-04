@@ -28,6 +28,10 @@ AES::AES(unsigned char key[], int keySize) {
 	KeyExpansion();
 }
 
+AES::~AES() {
+	free(w);
+}
+
 /**
  * Perform 'SubBytes' operation on the state.
  */
@@ -82,6 +86,7 @@ void AES::KeyExpansion() {
 			std::cout << "After RotWord(): " << util::wordToHex(temp) << std::endl;
 			temp.subWord();
 			std::cout << "After SubWord(): " << util::wordToHex(temp) << std::endl;
+			//need to use i-1 because index starts at 1 here.
 			temp = temp ^ rcon[(i-1)/Nk];
 			std::cout << "Rcon[i/Nk]: " << util::wordToHex(rcon[(i-1)/Nk]) << std::endl;
 			std::cout << "XOR with Rcon: " << util::wordToHex(temp) << std::endl;
