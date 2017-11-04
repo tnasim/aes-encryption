@@ -10,6 +10,8 @@
 using namespace std;
 using namespace util;
 
+const unsigned int CONSTANT = 0x11b;
+
 class AES {
     
 private:
@@ -18,9 +20,39 @@ private:
 	int Nr;							// Number of rounds
     char key_[32];
 	inline void initKey(unsigned char key[]) {
+
 		std::copy(key, key+32, key_);
-		//strcpy(key_, key);
+
+		cout << "Creating Round Constants..." << endl;
+		//initialize round constant array
+		rcon = new struct word[Nr];
+		for (int i = 0; i < Nr; i++) 
+		{	
+			//4 rows always
+			//rcon[i] = new unsigned char[4];
+
+			if (i == 0) 
+			{
+				rcon[i] = word(0x01, 0x00, 0x00, 0x00);
+				//rcon[i][0] = 0x01;
+			} else {
+				//XOR rcon * 2 with 0x11b (constant) AND with -(rcon>>7).
+				//where rcon>>7 is the first bit of rcon. 
+				unsigned char value = rcon[i-1].getByte(0);
+				value = (value<<1) ^ (CONSTANT & -(value>>7));
+				rcon[i] = word(value, 0x00, 0x00, 0x00);
+				//rcon[i] = (rcon[i-1][0]<<1) ^ (CONSTANT & -(rcon[i-1][0]>>7));
+			}
+			cout << "Constant " << (i+1) << ": " << charToHex(rcon[i].getByte(0)) << endl;
+		}
 	}
+
+	/**
+	 * Round Constant represented as a 2D array of bytes
+	 */ 
+	//unsigned char** rcon;
+	struct word *rcon;
+
 
 	/**
 	 * Key Schedule. Generated using the key.

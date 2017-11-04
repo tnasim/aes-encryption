@@ -34,9 +34,17 @@ namespace util
 
 		void subWord();
 
+		void rotWord();
+
+		struct word operator^(unsigned char b[]);
+
+		struct word operator^(word w);
+
 	};
 	
 	std::string charToHex(unsigned char*, int size);
+	std::string charToHex(unsigned char value);
+	std::string wordToHex(struct word w);
 	unsigned char* hexToChar(std::string s);
 }
 

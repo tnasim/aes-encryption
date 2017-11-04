@@ -15,10 +15,10 @@
 
 const int KEY_SIZE = 128;
 
-//std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
+std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
 //std::string sample_input	= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
 
-std::string sample_key			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
+//std::string sample_key			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 //std::string sample_input		= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
 std::string sample_input		= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
 
@@ -28,6 +28,7 @@ bool runAllTests();
 bool testSubBytes(std::string input, std::string expected_output);
 bool testShiftRows(std::string input, std::string expected_output);
 bool testMixColumns(std::string input, std::string expected_output);
+bool testKeyExpansion(std::string key);
 
 int main(int argc, char** argv)
 {
@@ -41,13 +42,34 @@ int main(int argc, char** argv)
 	//int size = strlen(input);
 	//char foo[4] = {'f','o','o',0};
 
-	
+	unsigned char** rcon;
+	rcon = new unsigned char*[10];
+	for (int i = 0; i < 10; i++) {
+		rcon[i] = new unsigned char[4];
+		if (i == 0) 
+		{
+			rcon[i][0] = 0x01;
+		} else {
+			//XOR rcon * 2 with 0x11b (constant) AND with -(rcon>>7).
+			//where rcon>>7 is the first bit of rcon.
+			rcon[i][0] = (rcon[i-1][0]<<1) ^ (0x11b & -(rcon[i-1][0]>>7));
+		}
+	}
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 10; j++) {
+			printf("%s ", charToHex(&rcon[j][i], 1).c_str());
+		}
+		printf("\n");
+	}
+		
 	if(runAllTests()) {
 		std::cout << "\033[1;32mALL TESTS PASSED\033[0m\n" << endl;
 	} else {
 		std::cout << "SOME TEST(S) FAILED" << endl;
 	}
 	 
+	/*
 	unsigned char* key = util::hexToChar(sample_key);
 	
 	std::string key_str = util::charToHex(key, 16);
@@ -69,6 +91,7 @@ int main(int argc, char** argv)
 	std::string out_str = util::charToHex(out, 16);
 	
 	std::cout << "Output: " << out_str << std::endl;
+	*/
 	
 	
 	return 0;
@@ -115,7 +138,8 @@ bool runAllTests() {
 			testShiftRows(
 						  "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53");
-	
+   passed = passed &&
+    		testKeyExpansion(sample_key);	
 	
 	// MixColumns tests:
 	// Appendix B: round 1
@@ -133,6 +157,8 @@ bool runAllTests() {
 			testMixColumns(
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53",
 						  "25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0");
+
+ 
 	
 	return passed;
 	
@@ -210,5 +236,19 @@ bool testMixColumns(std::string input, std::string expected_output) {
 	}
 	free(out);
 	std::cout << endl;
+	return passed;
+}
+
+bool testKeyExpansion(std::string key) {
+	bool passed = false;
+	std::cout << "Test - Key Expansion() -->" << std::endl;
+	std::cout << "\tKey: " << key << std::endl;
+
+	unsigned char* k = hexToChar(key);
+
+	AES *aes = new AES(k, 128);
+
+	free(k);
+
 	return passed;
 }

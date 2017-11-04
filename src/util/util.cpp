@@ -20,6 +20,26 @@ std::string util::charToHex(unsigned char *c, int size)
 	return ss.str();
 }
 
+std::string util::charToHex(unsigned char value) {
+	std::stringstream ss;
+	ss << std::hex << std::setfill('0');
+	ss << std::setw(2) << static_cast<unsigned>(value);
+	return ss.str();
+}
+
+std::string util::wordToHex(struct word w) {
+	std::stringstream ss;
+	ss << std::hex << std::setfill('0');
+
+	for (int i = 0; i < 4; i++) {
+		if (i == 3) 
+			ss << std::setw(2) << static_cast<unsigned>(w.getByte(i));
+		else
+			ss << std::setw(2) << static_cast<unsigned>(w.getByte(i)) << " ";
+	}
+	return ss.str();
+}
+
 unsigned char* util::hexToChar(std::string s) {
 	// Remove spaces (if any) from the hex string
 	std::string::iterator end_pos = std::remove(s.begin(), s.end(), ' ');
@@ -57,4 +77,30 @@ void util::word::subWord()
 		byte[i] = (unsigned char)sub;
 	}
 	return;
+}
+
+void util::word::rotWord()
+{
+	unsigned char temp = byte[0];
+	byte[0] = byte[1];
+	byte[1] = byte[2];
+	byte[2] = byte[3];
+	byte[3] = temp;
+}
+
+word util::word::operator^(unsigned char b[]) {
+	unsigned char b1 = this->getByte(0) ^ b[0];
+	unsigned char b2 = this->getByte(1) ^ b[1];
+	unsigned char b3 = this->getByte(2) ^ b[2];
+	unsigned char b4 = this->getByte(3) ^ b[3];
+	return word(b1,b2,b3,b4);
+}
+
+word util::word::operator^(word w) {
+	unsigned char b[4];
+	for (int i = 0; i < 4; i++)
+	{
+		b[i] = w.getByte(i) ^ this->getByte(i);
+	}
+	return word(b[0], b[1], b[2], b[3]);
 }
