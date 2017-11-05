@@ -27,7 +27,7 @@ private:
 		//there are. They rcon is always (hex) 01, 02, 04, 08, 10, 20, 40, 80, 1b, 36.. etc
 		//arranged as a array of words, the last 3 bytes of the word are ignored. 
 		//example: rcon[0] = {0x01, 0x00, 0x00, 0x00}
-		cout << "Creating Round Constants..." << endl;
+//		cout << "Creating Round Constants..." << endl;
 		//initialize round constant array
 		rcon = new struct word[Nr];
 		for (int i = 0; i < Nr; i++) 
@@ -43,7 +43,7 @@ private:
 				value = (value<<1) ^ (CONSTANT & -(value>>7));
 				rcon[i] = word(value, 0x00, 0x00, 0x00);
 			}
-			cout << "Constant " << (i+1) << ": " << charToHex(rcon[i].getByte(0)) << endl;
+//			cout << "Constant " << (i+1) << ": " << charToHex(rcon[i].getByte(0)) << endl;
 		}
 	}
 

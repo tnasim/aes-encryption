@@ -12,6 +12,7 @@
 #include "util/util.h"
 #include "../includes/state.h"
 #include "../includes/aes.h"
+#include "../test/keyExpansionTest.h"
 
 const int KEY_SIZE = 128;
 
@@ -22,13 +23,63 @@ std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
 //std::string sample_input		= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
 std::string sample_input		= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
 
+std::string sample_key_128_1 = "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
+std::string sample_key_expanded_128_1[] =
+				{
+						"2b7e1516", //w[ 0]
+						"28aed2a6", //w[ 1]
+						"abf71588", //w[ 2]
+						"09cf4f3c", //w[ 3]
+						"a0fafe17", //w[ 4]
+						"88542cb1", //w[ 5]
+						"23a33939", //w[ 6]
+						"2a6c7605", //w[ 7]
+						"f2c295f2", //w[ 8]
+						"7a96b943", //w[ 9]
+						"5935807a", //w[10]
+						"7359f67f", //w[11]
+						"3d80477d", //w[12]
+						"4716fe3e", //w[13]
+						"1e237e44", //w[14]
+						"6d7a883b", //w[15]
+						"ef44a541", //w[16]
+						"a8525b7f", //w[17]
+						"b671253b", //w[18]
+						"db0bad00", //w[19]
+						"d4d1c6f8", //w[20]
+						"7c839d87", //w[21]
+						"caf2b8bc", //w[22]
+						"11f915bc", //w[23]
+						"6d88a37a", //w[24]
+						"110b3efd", //w[25]
+						"dbf98641", //w[26]
+						"ca0093fd", //w[27]
+						"4e54f70e", //w[28]
+						"5f5fc9f3", //w[29]
+						"84a64fb2", //w[30]
+						"4ea6dc4f", //w[31]
+						"ead27321", //w[32]
+						"b58dbad2", //w[33]
+						"312bf560", //w[34]
+						"7f8d292f", //w[35]
+						"ac7766f3", //w[36]
+						"19fadc21", //w[37]
+						"28d12941", //w[38]
+						"575c006e", //w[39]
+						"d014f9a8", //w[40]
+						"c9ee2589", //w[41]
+						"e13f0cc8", //w[42]
+						"b6630ca6", //w[43]
+				};
+
 using namespace util;
+using namespace keyExpansionTest;
 
 bool runAllTests();
 bool testSubBytes(std::string input, std::string expected_output);
 bool testShiftRows(std::string input, std::string expected_output);
 bool testMixColumns(std::string input, std::string expected_output);
-bool testKeyExpansion(std::string key);
+bool testKeyExpansion(std::string key, std::string expected[]);
 
 int main(int argc, char** argv)
 {
@@ -138,9 +189,14 @@ bool runAllTests() {
 			testShiftRows(
 						  "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53");
-   passed = passed &&
-    		testKeyExpansion(sample_key);	
+
+
+	// Key Expansion Test:
+	// A.1 Expansion of a 128-bit Cipher Key
+	passed = passed &&
+    		testKeyExpansion(sample_key_128_1, sample_key_expanded_128_1);
 	
+
 	// MixColumns tests:
 	// Appendix B: round 1
 	passed = passed &&
@@ -239,17 +295,17 @@ bool testMixColumns(std::string input, std::string expected_output) {
 	return passed;
 }
 
-bool testKeyExpansion(std::string key) {
+bool testKeyExpansion(std::string key, std::string expected[]) {
 	bool passed = false;
-	std::cout << "Test - Key Expansion() -->" << std::endl;
-	std::cout << "\tKey: " << key << std::endl;
+	std::cout << "test - KeyExpansion() -->" << endl;
+	std::cout << "\tInput key:  " << key << endl;
 
-	unsigned char* k = hexToChar(key);
-
-	AES *aes = new AES(k, 128);
-
-	delete(aes);
-	free(k);
-
+	if( keyExpansionTest::test(key, expected, KEY_SIZE) ) {
+		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		passed = true;
+	} else {
+		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+	}
+	std::cout << endl;
 	return passed;
 }

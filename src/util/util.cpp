@@ -104,3 +104,12 @@ word util::word::operator^(word w) {
 	}
 	return word(b[0], b[1], b[2], b[3]);
 }
+
+bool util::word::operator==(word w) {
+	for (int i = 0; i < 4; i++)
+	{
+		if(w.getByte(i) != this->getByte(i))
+			return false;
+	}
+	return true;
+}

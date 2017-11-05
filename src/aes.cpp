@@ -18,13 +18,13 @@ AES::AES(unsigned char key[], int keySize) {
 
 	cout << "Nb: " << Nb << ", Nk: " << Nk << ", Nr: " << Nr << endl;
 
-	cout << "Key Initialized" << endl;
+	cout << "Initializing Key..." << endl;
 
 	initKey(key);
 
 	w = new struct word[Nb*(Nr + 1)];
 
-	cout << "Begining Key Expansion" << endl;
+	cout << "Beginning Key Expansion" << endl;
 	KeyExpansion();
 }
 
@@ -37,7 +37,6 @@ AES::~AES() {
  */
 void AES::SubBytes(State *state) {
 	state->SubBytes();
-    //printf("SubBytes - not defined yet\n");
 }
 
 /**
@@ -62,7 +61,7 @@ void AES::AddRoundKey(State *state) {
 }
 
 void AES::KeyExpansion() {
-	printf("Key Expansion - Testing\n");
+//	printf("Key Expansion - Testing\n");
 	//temporary word to hold a value
 	struct word temp;
 
@@ -79,24 +78,24 @@ void AES::KeyExpansion() {
 	while (i < Nb * (Nr + 1)) 
 	{
 		temp = w[i-1];
-		std::cout << "temp: " << util::wordToHex(temp) << std::endl;
+//		std::cout << "temp: " << util::wordToHex(temp) << std::endl;
 		if (i%Nk == 0)
 		{
 			temp.rotWord();
-			std::cout << "After RotWord(): " << util::wordToHex(temp) << std::endl;
+//			std::cout << "After RotWord(): " << util::wordToHex(temp) << std::endl;
 			temp.subWord();
-			std::cout << "After SubWord(): " << util::wordToHex(temp) << std::endl;
+//			std::cout << "After SubWord(): " << util::wordToHex(temp) << std::endl;
 			//need to use i-1 because index starts at 1 here.
 			temp = temp ^ rcon[(i-1)/Nk];
-			std::cout << "Rcon[i/Nk]: " << util::wordToHex(rcon[(i-1)/Nk]) << std::endl;
-			std::cout << "XOR with Rcon: " << util::wordToHex(temp) << std::endl;
+//			std::cout << "Rcon[i/Nk]: " << util::wordToHex(rcon[(i-1)/Nk]) << std::endl;
+//			std::cout << "XOR with Rcon: " << util::wordToHex(temp) << std::endl;
 			//temp = SubWord(RotWord(temp))^Rcon[i/Nk];
 		} else if (Nk > 6 && (i % Nk) == 4) {
 			temp.subWord();
 		}
-		std::cout << "w[i-Nk]: " << util::wordToHex(w[i-Nk]) << std::endl;
+//		std::cout << "w[i-Nk]: " << util::wordToHex(w[i-Nk]) << std::endl;
 		w[i] = temp ^ w[i-Nk];
-		std::cout << "w[i]: " << util::wordToHex(w[i]) << std::endl;
+//		std::cout << "w[i]: " << util::wordToHex(w[i]) << std::endl;
 		i++;
 	}
 	return;

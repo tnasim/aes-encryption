@@ -40,6 +40,8 @@ namespace util
 
 		struct word operator^(word w);
 
+		bool operator==(word w);
+
 	};
 	
 	std::string charToHex(unsigned char*, int size);
