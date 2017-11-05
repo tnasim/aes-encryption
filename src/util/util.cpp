@@ -27,19 +27,6 @@ std::string util::charToHex(unsigned char value) {
 	return ss.str();
 }
 
-std::string util::wordToHex(struct word w) {
-	std::stringstream ss;
-	ss << std::hex << std::setfill('0');
-
-	for (int i = 0; i < 4; i++) {
-		if (i == 3) 
-			ss << std::setw(2) << static_cast<unsigned>(w.getByte(i));
-		else
-			ss << std::setw(2) << static_cast<unsigned>(w.getByte(i)) << " ";
-	}
-	return ss.str();
-}
-
 unsigned char* util::hexToChar(std::string s) {
 	// Remove spaces (if any) from the hex string
 	std::string::iterator end_pos = std::remove(s.begin(), s.end(), ' ');
@@ -112,4 +99,13 @@ bool util::word::operator==(word w) {
 			return false;
 	}
 	return true;
+}
+
+bool util::word::operator!=(word w) {
+	for (int i = 0; i < 4; i++)
+	{
+		if(w.getByte(i) != this->getByte(i))
+			return true;
+	}
+	return false;
 }

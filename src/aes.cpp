@@ -78,24 +78,24 @@ void AES::KeyExpansion() {
 	while (i < Nb * (Nr + 1)) 
 	{
 		temp = w[i-1];
-//		std::cout << "temp: " << util::wordToHex(temp) << std::endl;
+//		std::cout << "temp: " << temp.hex() << std::endl;
 		if (i%Nk == 0)
 		{
 			temp.rotWord();
-//			std::cout << "After RotWord(): " << util::wordToHex(temp) << std::endl;
+//			std::cout << "After RotWord(): " << temp.hex() << std::endl;
 			temp.subWord();
-//			std::cout << "After SubWord(): " << util::wordToHex(temp) << std::endl;
+//			std::cout << "After SubWord(): " << temp.hex() << std::endl;
 			//need to use i-1 because index starts at 1 here.
 			temp = temp ^ rcon[(i-1)/Nk];
-//			std::cout << "Rcon[i/Nk]: " << util::wordToHex(rcon[(i-1)/Nk]) << std::endl;
-//			std::cout << "XOR with Rcon: " << util::wordToHex(temp) << std::endl;
+//			std::cout << "Rcon[i/Nk]: " << rcon[(i-1)/Nk].hex() << std::endl;
+//			std::cout << "XOR with Rcon: " << temp.hex() << std::endl;
 			//temp = SubWord(RotWord(temp))^Rcon[i/Nk];
 		} else if (Nk > 6 && (i % Nk) == 4) {
 			temp.subWord();
 		}
-//		std::cout << "w[i-Nk]: " << util::wordToHex(w[i-Nk]) << std::endl;
+//		std::cout << "w[i-Nk]: " << w[i-Nk].hex() << std::endl;
 		w[i] = temp ^ w[i-Nk];
-//		std::cout << "w[i]: " << util::wordToHex(w[i]) << std::endl;
+//		std::cout << "w[i]: " << w[i].hex() << std::endl;
 		i++;
 	}
 	return;
