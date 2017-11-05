@@ -12,7 +12,11 @@
 #include <string>
 #include "../src/util/util.h"
 #include "../includes/state.h"
+
+// this was necessary to access private properties of AES class.
+// I could not find better way to do this.
 #define private public
+
 #include "../includes/aes.h"
 
 const int KEY_SIZE = 128;
