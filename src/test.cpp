@@ -16,12 +16,13 @@
 
 const int KEY_SIZE = 128;
 
-std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
+//std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
 //std::string sample_input	= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
 
 //std::string sample_key			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 //std::string sample_input		= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
-std::string sample_input		= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
+std::string sample_input_128_1		= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
+std::string sample_cipher_128_1		= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
 
 std::string sample_key_128_1 = "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
 std::string sample_key_expanded_128_1[] =
@@ -80,6 +81,7 @@ bool testSubBytes(std::string input, std::string expected_output);
 bool testShiftRows(std::string input, std::string expected_output);
 bool testMixColumns(std::string input, std::string expected_output);
 bool testKeyExpansion(std::string key, std::string expected[]);
+bool testCipher(std::string input_data, std::string k, std::string expected_cipher);
 
 int main(int argc, char** argv)
 {
@@ -119,31 +121,8 @@ int main(int argc, char** argv)
 	} else {
 		std::cout << "SOME TEST(S) FAILED" << endl;
 	}
-	 
-	/*
-	unsigned char* key = util::hexToChar(sample_key);
-	
-	std::string key_str = util::charToHex(key, 16);
-	std::cout << "Key: " << key_str << std::endl;
-	
-	std::cout << "Input: " << sample_input << std::endl;
-	
-	
-	// make char (byte-) array from input
-	unsigned char *in = util::hexToChar(sample_input);
-	
-	unsigned char out[16] = {0};
-    unsigned char w[16] = {0};
-    
-    // Test AES class:
-    AES *aes = new AES(key, KEY_SIZE);
-    aes->Cipher(in, out, w);
-	
-	std::string out_str = util::charToHex(out, 16);
-	
-	std::cout << "Output: " << out_str << std::endl;
-	*/
-	
+
+	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
 	
 	return 0;
 }
@@ -218,6 +197,43 @@ bool runAllTests() {
 	
 	return passed;
 	
+}
+
+bool testCipher(std::string input_data, std::string k, std::string expected_cipher) {
+	bool passed = false;
+	std::cout << "test - Cipher() -->" << endl;
+
+	unsigned char* key = util::hexToChar(k);
+
+	std::string key_str = util::charToHex(key, 16);
+	std::cout << "\tKey:\t" << key_str << std::endl;
+
+	std::cout << "\tData:\t" << input_data << std::endl;
+
+
+	// make char (byte-) array from input
+	unsigned char *in = util::hexToChar(input_data);
+
+	unsigned char out[16] = {0};
+	unsigned char w[16] = {0};
+
+	// Test AES class:
+	AES *aes = new AES(key, KEY_SIZE);
+	aes->Cipher(in, out, w);
+
+	std::string ciphex = util::charToHex(out, 16);
+
+	if(!ciphex.compare(expected_cipher)) {
+		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		passed = true;
+	} else {
+		std::cout << "\t - Output Cipher:\t" << ciphex << std::endl;
+		std::cout << "\t - Expected Cipher:\t" << expected_cipher << std::endl;
+		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		passed = false;
+	}
+
+	return passed;
 }
 
 bool testSubBytes(std::string input, std::string expected_output) {
