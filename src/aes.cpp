@@ -111,9 +111,9 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	State *state = new State(input);
 	
 	
-	printf("Initial 'state': \n");
+	/*printf("Initial 'state': \n");
 	state->display();
-	printf("\n");
+	printf("\n");*/
 	
 	
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
@@ -140,9 +140,9 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	AddRoundKey(state);
 
 	
-	printf("Final 'state': \n");
+	/*printf("Final 'state': \n");
 	state->display();
-	printf("\n");
+	printf("\n");*/
 	
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), output);

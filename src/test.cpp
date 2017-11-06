@@ -19,12 +19,14 @@ const int KEY_SIZE = 128;
 //std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
 //std::string sample_input	= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
 
-//std::string sample_key			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
-//std::string sample_input		= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
-std::string sample_input_128_1		= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
-std::string sample_cipher_128_1		= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
+std::string sample_key_128_2			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
+std::string sample_input_128_2			= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
+std::string sample_cipher_128_2			= "69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a";
 
-std::string sample_key_128_1 = "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
+std::string sample_key_128_1 			= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
+std::string sample_input_128_1			= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
+std::string sample_cipher_128_1			= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
+
 std::string sample_key_expanded_128_1[] =
 				{
 						"2b7e1516", //w[ 0]
@@ -122,6 +124,7 @@ int main(int argc, char** argv)
 		std::cout << "SOME TEST(S) FAILED" << endl;
 	}
 
+	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
 	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
 	
 	return 0;
@@ -224,12 +227,12 @@ bool testCipher(std::string input_data, std::string k, std::string expected_ciph
 	std::string ciphex = util::charToHex(out, 16);
 
 	if(!ciphex.compare(expected_cipher)) {
-		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		std::cout << "\t\033[1;32m - test Cipher() PASSED - Congratulations!!\033[0m\n";
 		passed = true;
 	} else {
 		std::cout << "\t - Output Cipher:\t" << ciphex << std::endl;
 		std::cout << "\t - Expected Cipher:\t" << expected_cipher << std::endl;
-		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		std::cout << "\t\033[1;31m - test Cipher() FAILED\033[0m\n";
 		passed = false;
 	}
 
@@ -250,10 +253,12 @@ bool testSubBytes(std::string input, std::string expected_output) {
 	std::string substituted_str = util::charToHex(out, 16);
 	std::cout << "\tOutput: " << substituted_str << endl;
 	if(!substituted_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		std::cout << "\t\033[1;32m - test SubBytes() PASSED\033[0m\n";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		std::cout << "\t - Output:\t" << substituted_str << std::endl;
+		std::cout << "\t - Expected:\t" << expected_output << std::endl;
+		std::cout << "\t\033[1;31m - test SubBytes() FAILED\033[0m\n";
 		passed = false;
 	}
 	free(out);
@@ -275,10 +280,12 @@ bool testShiftRows(std::string input, std::string expected_output) {
 	std::string shifted_str = util::charToHex(out, 16);
 	std::cout << "\tOutput: " << shifted_str << endl;
 	if(!shifted_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		std::cout << "\t\033[1;32m - test ShiftRows() PASSED\033[0m\n";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		std::cout << "\t - Output:\t" << shifted_str << std::endl;
+		std::cout << "\t - Expected:\t" << expected_output << std::endl;
+		std::cout << "\t\033[1;31m - test ShiftRows() FAILED\033[0m\n";
 		passed = false;
 	}
 	free(out);
@@ -300,10 +307,12 @@ bool testMixColumns(std::string input, std::string expected_output) {
 	std::string mixed_str = util::charToHex(out, 16);
 	std::cout << "\tOutput: " << mixed_str << endl;
 	if(!mixed_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		std::cout << "\t\033[1;32m - test MixColumns() PASSED\033[0m\n";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		std::cout << "\t - Output:\t" << mixed_str << std::endl;
+		std::cout << "\t - Expected:\t" << expected_output << std::endl;
+		std::cout << "\t\033[1;31m - test MixColumns() FAILED\033[0m\n";
 		passed = false;
 	}
 	free(out);
@@ -317,10 +326,10 @@ bool testKeyExpansion(std::string key, std::string expected[]) {
 	std::cout << "\tInput key:  " << key << endl;
 
 	if( keyExpansionTest::test(key, expected, KEY_SIZE) ) {
-		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		std::cout << "\t\033[1;32m - test KeyExpansion() PASSED\033[0m\n";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		std::cout << "\t\033[1;31m - test KeyExpansion() FAILED\033[0m\n";
 	}
 	std::cout << endl;
 	return passed;
