@@ -18,6 +18,7 @@ private:
 	int Nb;							// Number of words in a block
 	int Nk;							// Number of words in the key
 	int Nr;							// Number of rounds
+	int currentround;
     char key_[32];
 
 	inline void initKey(unsigned char key[]) {
@@ -77,7 +78,7 @@ private:
     /**
      * Perform 'AddRoundKey' operation on the state.
      */
-    void AddRoundKey(State *state);
+    void AddRoundKey(State *state, int round);
 	
 	/**
 	 * Expands key 

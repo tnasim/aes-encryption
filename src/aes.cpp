@@ -10,6 +10,8 @@ using namespace std;
 AES::AES(unsigned char key[], int keySize) {
 	cout << "Starting AES Service..." << endl;
 
+	currentround = 0;
+
 	Nb = AES::BLOCK_SIZE/AES::WORD_SIZE;
 	
 	Nk = keySize/AES::WORD_SIZE;
@@ -57,12 +59,13 @@ void AES::MixColumns(State *state) {
 /**
  * Perform 'AddRoundKey' operation on the state.
  */
-void AES::AddRoundKey(State *state) {
+void AES::AddRoundKey(State *state, int round) {
     printf("AddRoundKey - not defined yet\n");
+    state->AddRoundKey(w, round, Nb);
 }
 
 void AES::KeyExpansion() {
-	printf("Key Expansion - Testing\n");
+	printf("Key Expansion\n");
 	//temporary word to hold a value
 	struct word temp;
 

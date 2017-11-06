@@ -29,6 +29,7 @@ bool testSubBytes(std::string input, std::string expected_output);
 bool testShiftRows(std::string input, std::string expected_output);
 bool testMixColumns(std::string input, std::string expected_output);
 bool testKeyExpansion(std::string key);
+bool testAddRoundKey(std::string input, std::string expected_output);
 
 int main(int argc, char** argv)
 {
@@ -138,7 +139,14 @@ bool runAllTests() {
 			testShiftRows(
 						  "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53");
-   passed = passed &&
+
+
+    passed = passed &&
+    		testAddRoundKey(
+    				"32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34", 
+    				"19 a0 9a e9 3d f4 c6 f8 e3 e2 8d 48 be 2b 2a 08");
+
+    passed = passed &&
     		testKeyExpansion(sample_key);	
 	
 	// MixColumns tests:
@@ -235,6 +243,35 @@ bool testMixColumns(std::string input, std::string expected_output) {
 		passed = false;
 	}
 	free(out);
+	std::cout << endl;
+	return passed;
+}
+
+bool testAddRoundKey(std::string input, std::string expected_output) {
+	bool passed = false;
+	std::cout << "Test - AddRoundKey() --" << endl;
+	std::cout << "\tInput:  " << input << endl;
+	unsigned char* key = util::hexToChar(sample_key);
+	unsigned char* in = util::hexToChar(input);
+	State *state = new State(in);
+	struct word* w = new word[1];
+	for (int i = 0; i < 4; i++)
+		w[0].setByte(key[i], i);
+	state->AddRoundKey(w, 4, 0);
+
+	unsigned char* out = state->getOutput();
+	std::string addKey_str = util::charToHex(out, 16);
+	std::cout << "\tOutput: " << addKey_str << endl;
+	if(!addKey_str.compare(expected_output)) {
+		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		passed = true;
+	} else {
+		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		passed = false;
+	}
+//	delete(state);
+//	delete(word);
+//	free(out);
 	std::cout << endl;
 	return passed;
 }
