@@ -42,6 +42,8 @@ int main(int argc, char** argv)
 	//char foo[4] = {'f','o','o',0};
 
 	
+
+	
 	if(runAllTests()) {
 		std::cout << "\033[1;32mALL TESTS PASSED\033[0m\n" << endl;
 	} else {

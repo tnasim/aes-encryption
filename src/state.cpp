@@ -4,6 +4,8 @@
 #include "../includes/state.h"
 
 
+#define xtime(x) ((x<<1) ^ (((x>>7 & 1) * 0x1b)))
+
 const char State::sbox[16][16][3] =
 {	{"63", "7c", "77", "7b", "f2", "6b", "6f", "c5", "30", "01", "67", "2b", "fe", "d7", "ab", "76"},
 	{"ca", "82", "c9", "7d", "fa", "59", "47", "f0", "ad", "d4", "a2", "af", "9c", "a4", "72", "c0"},
@@ -23,6 +25,8 @@ const char State::sbox[16][16][3] =
 	{"8c", "a1", "89", "0d", "bf", "e6", "42", "68", "41", "99", "2d", "0f", "b0", "54", "bb", "16"}
 };
 
+
+
 /**
  * Takes in the input byte array and initializes the 'state' array with this input.
  */
@@ -39,6 +43,10 @@ State::State(unsigned char input[])
 State::~State() {
 	free(s);
 }
+
+
+
+
 
 void State::update(unsigned char sp[4][4]) {
 	int i, j;
@@ -146,15 +154,44 @@ void State::ShiftRows() {
 void State::MixColumns() {
 	
 	//TODO:  need to implement
-	return;
-}
+	int i;
+	unsigned char m,n,o,p;
+
+
+	for(i=0;i<4;i++){
+
+
+		unsigned char a,b,c,d;
+		m = s[0][i];
+		n = s[1][i];
+		o = s[2][i];
+		p = s[3][i];
+
+
+		a = xtime(m);
+		b = xtime(n);
+		c = xtime(o);
+		d = xtime(p);
+		
+		s[0][i] = a ^ n ^ b ^ o ^ p;
+		s[1][i] = m ^ b ^ o ^ c ^ p;
+		s[2][i] = m ^ n ^ c ^ p ^ d;
+		s[3][i] = m ^ a ^ n ^ o ^ d;
+	}
+
+}	
+
+
+
+	
+
 
 /**
  * Performs 'AddRoundKey' operation on this state
  *
  * Reference: FIPS-197, section 5.1.4
  */
-void State::AddRoundKey(Word w[]) {
+void State::AddRoundKey(Word w[]) {    
 	
 	//TODO:  need to implement
 	return;
