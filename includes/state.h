@@ -20,9 +20,6 @@ private:
 	 */
 	unsigned char s[4][4];
 
-	// 5.1.1: Fig. 7
-	static const char sbox[16][16][3];
-	
 	/**
 	 * Display the current contents of the state (with lines)
 	 */
@@ -30,6 +27,9 @@ private:
 	
 public:
 	
+	// 5.1.1: Fig. 7
+	static const char sbox[16][16][3];	
+
 	static int const display_style = DISPLAY_FANCY;
 	//static int const display_style = DISPLAY_NORMAL;
 	
@@ -78,7 +78,7 @@ public:
 	/**
 	 * Performs 'AddRoundKey' operation on this state
 	 */
-	void AddRoundKey(Word w[]);
+	void AddRoundKey(struct word w[]);
 	
 	/**
 	 * Display the current contents of the state

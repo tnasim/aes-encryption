@@ -191,7 +191,8 @@ void State::MixColumns() {
  *
  * Reference: FIPS-197, section 5.1.4
  */
-void State::AddRoundKey(Word w[]) {    
+
+void State::AddRoundKey(struct word w[]) {
 	
 	//TODO:  need to implement
 	return;
