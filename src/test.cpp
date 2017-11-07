@@ -97,27 +97,6 @@ int main(int argc, char** argv)
 	//int size = strlen(input);
 	//char foo[4] = {'f','o','o',0};
 
-	unsigned char** rcon;
-	rcon = new unsigned char*[10];
-	for (int i = 0; i < 10; i++) {
-		rcon[i] = new unsigned char[4];
-		if (i == 0) 
-		{
-			rcon[i][0] = 0x01;
-		} else {
-			//XOR rcon * 2 with 0x11b (constant) AND with -(rcon>>7).
-			//where rcon>>7 is the first bit of rcon.
-			rcon[i][0] = (rcon[i-1][0]<<1) ^ (0x11b & -(rcon[i-1][0]>>7));
-		}
-	}
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 10; j++) {
-			printf("%s ", charToHex(&rcon[j][i], 1).c_str());
-		}
-		printf("\n");
-	}
-		
 	if(runAllTests()) {
 		std::cout << "\033[1;32mALL TESTS PASSED\033[0m\n" << endl;
 	} else {
