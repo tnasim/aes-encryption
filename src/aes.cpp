@@ -121,25 +121,40 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
 	AddRoundKey(state, 0);
+	std::cout << "After AddRoundKey, 0" << std::endl;
+	state->display();
 	
 	//TODO: perform other operations for each round:
 
 	 for (int round = 1; round < Nr; round++) {
 		SubBytes(state); // See Sec. 5.1.1
+		std::cout << "After SubBytes, round " << round << std::endl;
+		state->display();
 		ShiftRows(state); // See Sec. 5.1.2
+		std::cout << "After ShiftRows, round " << round << std::endl;
+		state->display();
 		MixColumns(state); // See Sec. 5.1.3
+		std::cout << "After MixColumns, round " << round << std::endl;
+		state->display();
 		//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //		AddRoundKey(state, w[round*Nb, (round+1)*Nb-1]);
 		AddRoundKey(state, round);
+		std::cout << "After AddRoundKey, round " << round << std::endl;
+		state->display();
 	 }
 
-	
 	SubBytes(state);
+	std::cout << "After SubBytes, final " << std::endl;
+	state->display();
 	ShiftRows(state);
+	std::cout << "After ShiftRows, final " << std::endl;
+	state->display();
 
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[Nr*Nb, (Nr+1)*Nb-1]); // Sec. 5.1.4
 	AddRoundKey(state, Nr);
+	std::cout << "After final AddRoundKey" << std::endl;
+	state->display();
 
 	
 	/*printf("Final 'state': \n");

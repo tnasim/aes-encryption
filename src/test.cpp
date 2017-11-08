@@ -24,7 +24,7 @@ std::string sample_input_128_2			= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee
 std::string sample_cipher_128_2			= "69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a";
 
 std::string sample_key_128_1 			= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
-std::string sample_input_128_1			= "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08";
+std::string sample_input_128_1			= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
 std::string sample_cipher_128_1			= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
 
 std::string sample_key_expanded_128_1[] =
