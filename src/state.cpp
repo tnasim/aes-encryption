@@ -78,7 +78,6 @@ void State::swapBytes(state_pos b1, state_pos b2) {
 word State::getWord(int col) {
 	struct word w = word(getByte(state_pos(col, 0)), getByte(state_pos(col,1)),
 		getByte(state_pos(col, 2)), getByte(state_pos(col, 3)));
-	std::cout << "Word from state: " << w.hex() << std::endl;
 	return w;
 }
 
