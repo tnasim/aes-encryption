@@ -43,21 +43,21 @@ void AES::SubBytes(State *state) {
  * Perform 'ShiftRows' operation on the state.
  */
 void AES::ShiftRows(State *state) {
-    printf("ShiftRows - not defined yet\n");
+    state->ShiftRows();
 }
 
 /**
  * Perform 'MixColumns' operation on the state.
  */
 void AES::MixColumns(State *state) {
-    printf("MixColumns - not defined yet\n");
+    state->MixColumns();
 }
 
 /**
  * Perform 'AddRoundKey' operation on the state.
  */
 void AES::AddRoundKey(State *state) {
-    printf("AddRoundKey - not defined yet\n");
+    state->AddRoundKey(w);
 }
 
 void AES::KeyExpansion() {
@@ -105,42 +105,45 @@ void AES::KeyExpansion() {
  * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
  */
 void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[]) {
-	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
+//	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
 	
 	// build the 'state' using input:
 	State *state = new State(input);
 	
 	
-	printf("Initial 'state': \n");
+	/*printf("Initial 'state': \n");
 	state->display();
-	printf("\n");
+	printf("\n");*/
 	
 	
-	//TODO: AddRoundKey(state, w[0, Nb-1]) // Sec. 5.1.4
+	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
+//	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
+	AddRoundKey(state);
 	
 	//TODO: perform other operations for each round:
-	/*
-	 for round = 1 step 1 to Nr–1
-		SubBytes(state) // See Sec. 5.1.1
-		ShiftRows(state) // See Sec. 5.1.2
-		MixColumns(state) // See Sec. 5.1.3
-		AddRoundKey(state, w[round*Nb, (round+1)*Nb-1])
-	 end for
-	 */
+
+	 for (int round = 1; round < Nr; round++) {
+		SubBytes(state); // See Sec. 5.1.1
+		ShiftRows(state); // See Sec. 5.1.2
+		MixColumns(state); // See Sec. 5.1.3
+		//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
+//		AddRoundKey(state, w[round*Nb, (round+1)*Nb-1]);
+		AddRoundKey(state);
+	 }
+
 	
-	//TODO: finalize
-	/*
-	SubBytes(state)
-	ShiftRows(state)
-	AddRoundKey(state, w[Nr*Nb, (Nr+1)*Nb-1])
-	*/
+	SubBytes(state);
+	ShiftRows(state);
+
+	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
+//	AddRoundKey(state, w[Nr*Nb, (Nr+1)*Nb-1]); // Sec. 5.1.4
+	AddRoundKey(state);
+
 	
-	printf("Final 'state': \n");
+	/*printf("Final 'state': \n");
 	state->display();
-	printf("\n");
+	printf("\n");*/
 	
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), output);
-	
-	printf("Cipher -- not fully implemented yet\n");
 }
