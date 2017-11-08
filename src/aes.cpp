@@ -10,6 +10,8 @@ using namespace std;
 AES::AES(unsigned char key[], int keySize) {
 	cout << "Starting AES Service..." << endl;
 
+	currentround = 0;
+
 	Nb = AES::BLOCK_SIZE/AES::WORD_SIZE;
 	
 	Nk = keySize/AES::WORD_SIZE;
@@ -56,8 +58,8 @@ void AES::MixColumns(State *state) {
 /**
  * Perform 'AddRoundKey' operation on the state.
  */
-void AES::AddRoundKey(State *state) {
-    state->AddRoundKey(w);
+void AES::AddRoundKey(State *state, int round) {
+    state->AddRoundKey(w, round, Nb);
 }
 
 void AES::KeyExpansion() {
@@ -118,27 +120,21 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
-	AddRoundKey(state);
-	
-	//TODO: perform other operations for each round:
+	AddRoundKey(state, 0);
+	std::cout << "After AddRoundKey, 0" << std::endl;
+	state->display();
 
 	 for (int round = 1; round < Nr; round++) {
 		SubBytes(state); // See Sec. 5.1.1
 		ShiftRows(state); // See Sec. 5.1.2
 		MixColumns(state); // See Sec. 5.1.3
-		//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
-//		AddRoundKey(state, w[round*Nb, (round+1)*Nb-1]);
-		AddRoundKey(state);
+		AddRoundKey(state, round);
 	 }
 
-	
 	SubBytes(state);
 	ShiftRows(state);
 
-	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
-//	AddRoundKey(state, w[Nr*Nb, (Nr+1)*Nb-1]); // Sec. 5.1.4
-	AddRoundKey(state);
-
+	AddRoundKey(state, Nr);
 	
 	/*printf("Final 'state': \n");
 	state->display();

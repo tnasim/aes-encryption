@@ -75,10 +75,15 @@ void State::swapBytes(state_pos b1, state_pos b2) {
  * Build an array and return the pointer to the
  * first element in the array.
  */
-unsigned char* State::getWord(int col) {
-	unsigned char* word;
-	word = (unsigned char*) malloc(sizeof(unsigned char)*16);
-	return word;
+word State::getWord(int col) {
+	struct word w = word(getByte(state_pos(col, 0)), getByte(state_pos(col,1)),
+		getByte(state_pos(col, 2)), getByte(state_pos(col, 3)));
+	return w;
+}
+
+void State::setWord(struct word w, int col) {
+	for (int i = 0; i < 4; i++)
+		s[i][col] = w.getByte(i);
 }
 
 /**
@@ -191,10 +196,13 @@ void State::MixColumns() {
  *
  * Reference: FIPS-197, section 5.1.4
  */
-
-void State::AddRoundKey(struct word w[]) {
-	
-	//TODO:  need to implement
+void State::AddRoundKey(struct word w[], int round, int Nb) {
+	//for each column
+	for (int c = 0; c < 4; c++) {
+		struct word key = w[round*Nb + c];
+		struct word w = getWord(c);
+		setWord(key ^ w, c);
+	}
 	return;
 }
 

@@ -7,6 +7,7 @@
 
 using namespace util;
 struct state_pos {
+	state_pos(int col, int row) {this->col = col; this->row = row;}
 	int col;
 	int row;
 
@@ -56,7 +57,9 @@ public:
 	 * Build an array and return the pointer to the
 	 * first element in the array.
 	 */
-	unsigned char* getWord(int col);
+	struct word getWord(int col);
+
+	void setWord(struct word w,int col);
 	
 	unsigned char* getOutput();
 	
@@ -78,7 +81,7 @@ public:
 	/**
 	 * Performs 'AddRoundKey' operation on this state
 	 */
-	void AddRoundKey(struct word w[]);
+	void AddRoundKey(struct word w[], int round, int Nb);
 	
 	/**
 	 * Display the current contents of the state
