@@ -309,7 +309,7 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 	bool passed = false;
 	std::cout << "Test - AddRoundKey() --" << endl;
 	std::cout << "\tInput:  " << input << endl;
-	unsigned char* key = util::hexToChar(sample_key);
+	unsigned char* key = util::hexToChar(sample_key_128_1);
 	unsigned char* in = util::hexToChar(input);
 	State *state = new State(in);
 	State *sKey = new State(key);

@@ -120,7 +120,7 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
-	AddRoundKey(state);
+	AddRoundKey(state, 0);
 	
 	//TODO: perform other operations for each round:
 
@@ -130,7 +130,7 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 		MixColumns(state); // See Sec. 5.1.3
 		//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //		AddRoundKey(state, w[round*Nb, (round+1)*Nb-1]);
-		AddRoundKey(state);
+		AddRoundKey(state, round);
 	 }
 
 	
@@ -139,7 +139,7 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[Nr*Nb, (Nr+1)*Nb-1]); // Sec. 5.1.4
-	AddRoundKey(state);
+	AddRoundKey(state, Nr);
 
 	
 	/*printf("Final 'state': \n");
