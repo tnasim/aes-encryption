@@ -68,8 +68,10 @@ void State::swapBytes(state_pos b1, state_pos b2) {
  * first element in the array.
  */
 word State::getWord(int col) {
-	return word(getByte(state_pos(col, 0)), getByte(state_pos(col,1)),
+	struct word w = word(getByte(state_pos(col, 0)), getByte(state_pos(col,1)),
 		getByte(state_pos(col, 2)), getByte(state_pos(col, 3)));
+	std::cout << "Word from state: " << w.hex() << std::endl;
+	return w;
 }
 
 void State::setWord(struct word w, int col) {
@@ -162,7 +164,12 @@ void State::AddRoundKey(struct word w[], int round, int Nb) {
 	//TODO:  need to implement
 	//for each column
 	for (int c = 0; c < 4; c++) {
-		setWord(getWord(c) ^ w[round*Nb + c], c);
+		std::cout << "Getting word: " << (round*Nb + c) << std::endl;
+		struct word key = w[round*Nb + c];
+		struct word w = getWord(c);
+		std::cout << "word: " << w.hex() << std::endl;
+		std::cout << "key: " << key.hex() << std::endl;
+		setWord(key ^ w, c);
 	}
 	printf("Result of AddRoundKey --> \n");
 	displayFancy();

@@ -195,7 +195,7 @@ bool runAllTests() {
     passed = passed &&
     		testAddRoundKey(
     				"32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34", 
-    				"19 a0 9a e9 3d f4 c6 f8 e3 e2 8d 48 be 2b 2a 08");
+    				"19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08");
 
 	// Key Expansion Test:
 	// A.1 Expansion of a 128-bit Cipher Key
@@ -308,9 +308,20 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 	unsigned char* key = util::hexToChar(sample_key);
 	unsigned char* in = util::hexToChar(input);
 	State *state = new State(in);
-	struct word* w = new word[1];
+	State *sKey = new State(key);
+	struct word* w = new word[4];
+	int q = 0;
 	for (int i = 0; i < 4; i++)
-		w[0].setByte(key[i], i);
+		for (int j = 0; j < 4; j++) {
+			w[i].setByte(key[q], j);
+			q++;
+		}
+
+	std::cout << "Input: " << std::endl;
+	state->display();
+	std::cout << std::endl << "XOR: " << std::endl;
+	sKey->display();
+
 	state->AddRoundKey(w, 4, 0);
 
 	unsigned char* out = state->getOutput();
