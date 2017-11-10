@@ -95,6 +95,7 @@ bool testSubBytes(std::string input, std::string expected_output, bool inverse=f
 bool testShiftRows(std::string input, std::string expected_output, bool inverse=false);
 bool testMixColumns(std::string input, std::string expected_output, bool inverse=false);
 bool testAddRoundKey(std::string input, std::string expected_output);
+bool testXTimes(std::string input, std::string expected_output);
 
 bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
 
@@ -216,6 +217,11 @@ bool runAllTests() {
 		passed = passed && testShiftRows(shift_rows_sample[i][1], shift_rows_sample[i][0], true);
 	}
 	
+	passed = passed && testXTimes("57", "ae");
+	passed = passed && testXTimes("ae", "47");
+	passed = passed && testXTimes("47", "8e");
+	passed = passed && testXTimes("8e", "07");
+
 	return passed;
 	
 }
@@ -361,6 +367,25 @@ bool testTransformation(trans_type transformation, std::string input, std::strin
 		passed = false;
 	}
 	free(out);
+
+	return passed;
+}
+
+bool testXTimes(std::string input, std::string expected_output) {
+	bool passed = false;
+	std::cout << "test - xTimes() -->" << endl;
+	unsigned char* a = util::hexToChar(input);
+	unsigned char xTimes57 = util::xTimes(a[0]);
+	std::string xTimes57_str = util::charToHex(xTimes57);
+
+	if( !xTimes57_str.compare(expected_output) ) {
+		std::cout << "\t\033[1;32m - test xTimes({" << input << "}) PASSED\033[0m\n";
+		passed = true;
+	} else {
+		std::cout << "\t\033[1;31m - test xTimes({" << input << "}) FAILED\033[0m\n";
+	}
+
+	//	std::cout << "xtimes({" << input << "}) = " << xTimes57_str << endl;
 
 	return passed;
 }

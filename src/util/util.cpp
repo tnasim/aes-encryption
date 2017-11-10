@@ -44,6 +44,17 @@ unsigned char* util::hexToChar(std::string s) {
 	
 }
 
+unsigned char util::xTimes(unsigned char x) {
+	unsigned char a = (unsigned char) 27;
+	if((int)(x<<1) > 255) {
+		x = x << 1;
+		x = x^a;
+	} else {
+		x = x << 1;
+	}
+	return x;
+}
+
 void util::word::subWord() 
 {
 	for (int i = 0; i < 4; i++) 

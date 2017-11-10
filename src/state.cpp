@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include "../includes/state.h"
 
-
-#define xtime(x) ((x<<1) ^ (((x>>7 & 1) * 0x1b)))
+// search google with key-word "aes xtime c++"
+// -- the first result contains 'xtime' macro that exactly matches this code.
+// So, we should not use this and write our own code instead.
+//#define xtime(x) ((x<<1) ^ (((x>>7 & 1) * 0x1b)))
 
 const char State::sbox[16][16][3] =
 {	{"63", "7c", "77", "7b", "f2", "6b", "6f", "c5", "30", "01", "67", "2b", "fe", "d7", "ab", "76"},
@@ -191,10 +193,10 @@ void State::MixColumns() {
 		p = s[3][i];
 
 
-		a = xtime(m);
-		b = xtime(n);
-		c = xtime(o);
-		d = xtime(p);
+		a = util::xTimes(m);
+		b = util::xTimes(n);
+		c = util::xTimes(o);
+		d = util::xTimes(p);
 		
 		s[0][i] = a ^ n ^ b ^ o ^ p;
 		s[1][i] = m ^ b ^ o ^ c ^ p;

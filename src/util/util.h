@@ -79,6 +79,7 @@ namespace util
 	std::string charToHex(unsigned char*, int size);
 	std::string charToHex(unsigned char value);
 	unsigned char* hexToChar(std::string s);
+	unsigned char xTimes(unsigned char x);
 }
 
 #endif
