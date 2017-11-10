@@ -45,14 +45,41 @@ unsigned char* util::hexToChar(std::string s) {
 }
 
 unsigned char util::xTimes(unsigned char x) {
-	unsigned char a = (unsigned char) 27;
-	if((int)(x<<1) > 255) {
+	unsigned char a = (unsigned char) 27; // "1b"
+	if((int)(x<<1) > 255) { // if xTimes exceeds 8 bits, mod with '1b' (hex)
 		x = x << 1;
 		x = x^a;
 	} else {
 		x = x << 1;
 	}
 	return x;
+}
+
+/** Multiplication of Polynomial in GF(2^8) modulo (x^8+x^4+x^3+x+1")
+ * a(x) = {03}.x^3 + {01}.x^2 + {01}.x + {02}
+ *
+ * FIPS-197: Section 4.2
+ * */
+unsigned char util::polyMultiply(unsigned char a, unsigned char b) {
+	unsigned char m = (unsigned char) ( ( ((int)b)%2==1)?a:0);
+	unsigned char x = a;
+	int n = (int) b;
+//	printf("x == %02x (%d)\n", x, x);
+//	printf("m == %02x (%d)\n", m, m);
+	while(n>0) {
+		n/=2;
+//		printf("n == %02x (%d)\n", n, n);
+		x = xTimes(x);
+		if(n%2==1) {
+			m = m ^ x;
+		}
+//		printf("x == %02x (%d) -- %d\n", x, x, n%2);
+//		printf("m == %02x (%d)\n", m, m);
+	}
+
+//	printf("\t-------- %02x . (%02x) == (%02x)\n", a, b, m);
+
+	return m;
 }
 
 void util::word::subWord() 

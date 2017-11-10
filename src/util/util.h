@@ -80,6 +80,7 @@ namespace util
 	std::string charToHex(unsigned char value);
 	unsigned char* hexToChar(std::string s);
 	unsigned char xTimes(unsigned char x);
+	unsigned char polyMultiply(unsigned char x, unsigned char y);
 }
 
 #endif

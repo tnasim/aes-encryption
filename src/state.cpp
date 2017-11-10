@@ -180,28 +180,31 @@ void State::ShiftRows() {
 void State::MixColumns() {
 	
 	int i;
-	unsigned char m,n,o,p;
+	unsigned char s0, s1, s2, s3;
+	unsigned char a, b, c, d;
 
 
 	for(i=0;i<4;i++){
 
+		s0 = s[0][i];
+		s1 = s[1][i];
+		s2 = s[2][i];
+		s3 = s[3][i];
 
-		unsigned char a,b,c,d;
-		m = s[0][i];
-		n = s[1][i];
-		o = s[2][i];
-		p = s[3][i];
+		/**
+		 * Multiply the column by a(x) in GF(2^8)
+		 * a(x) = {03}.x^3 + {01}.x^2 + {01}.x + {02}
+		 * */
+		a = util::polyMultiply( s0, 2 ) ^ util::polyMultiply( s1, 3 ) ^ s2 ^ s3;
+		b = s0 ^ util::polyMultiply( s1, 2 ) ^ util::polyMultiply( s2, 3 ) ^ s3;
+		c = s0 ^ s1 ^ util::polyMultiply( s2, 2 ) ^ util::polyMultiply( s3, 3 );
+		d = util::polyMultiply( s0, 3 ) ^ s1 ^ s2 ^ util::polyMultiply( s3, 2 );
 
-
-		a = util::xTimes(m);
-		b = util::xTimes(n);
-		c = util::xTimes(o);
-		d = util::xTimes(p);
+		s[0][i] = a;
+		s[1][i] = b;
+		s[2][i] = c;
+		s[3][i] = d;
 		
-		s[0][i] = a ^ n ^ b ^ o ^ p;
-		s[1][i] = m ^ b ^ o ^ c ^ p;
-		s[2][i] = m ^ n ^ c ^ p ^ d;
-		s[3][i] = m ^ a ^ n ^ o ^ d;
 	}
 
 }	

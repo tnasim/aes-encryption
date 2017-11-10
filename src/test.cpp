@@ -96,6 +96,7 @@ bool testShiftRows(std::string input, std::string expected_output, bool inverse=
 bool testMixColumns(std::string input, std::string expected_output, bool inverse=false);
 bool testAddRoundKey(std::string input, std::string expected_output);
 bool testXTimes(std::string input, std::string expected_output);
+bool testPolyMultiply(std::string x, std::string y, std::string expected_output);
 
 bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
 
@@ -118,6 +119,7 @@ int main(int argc, char** argv)
 		log(TEST_PASS) << "ALL TESTS PASSED\n";
 	} else {
 		log(TEST_FAIL) << "SOME TEST(S) FAILED";
+		return 0;
 	}
 
 	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
@@ -189,6 +191,16 @@ bool runAllTests() {
     		testKeyExpansion(sample_key_128_1, sample_key_expanded_128_1);
 	
 
+	passed = passed && testXTimes("57", "ae");
+	passed = passed && testXTimes("ae", "47");
+	passed = passed && testXTimes("47", "8e");
+	passed = passed && testXTimes("8e", "07");
+
+	passed = passed && testPolyMultiply("57", "13", "fe");
+	passed = passed && testPolyMultiply("57", "83", "c1");
+	passed = passed && testPolyMultiply("bf", "03", "da");
+	passed = passed && testPolyMultiply("bf", "02", "65");
+
 	// MixColumns tests:
 	// Appendix B: round 1
 	passed = passed &&
@@ -216,11 +228,6 @@ bool runAllTests() {
 	for(i = 0; i < shift_rows_total_samples && passed; i++) {
 		passed = passed && testShiftRows(shift_rows_sample[i][1], shift_rows_sample[i][0], true);
 	}
-	
-	passed = passed && testXTimes("57", "ae");
-	passed = passed && testXTimes("ae", "47");
-	passed = passed && testXTimes("47", "8e");
-	passed = passed && testXTimes("8e", "07");
 
 	return passed;
 	
@@ -371,21 +378,39 @@ bool testTransformation(trans_type transformation, std::string input, std::strin
 	return passed;
 }
 
+bool testPolyMultiply(std::string x, std::string y, std::string expected_output) {
+	bool passed = false;
+	std::cout << "test - polyMultiply() -->" << endl;
+	unsigned char* a = util::hexToChar(x);
+	unsigned char* b = util::hexToChar(y);
+	unsigned char m = util::polyMultiply(a[0], b[0]);
+	std::string m_str = util::charToHex(m);
+
+	if( !m_str.compare(expected_output) ) {
+		std::cout << "\t\033[1;32m - test polyMulti({" << x << "}, {" << y << "}) PASSED\033[0m\n";
+		passed = true;
+	} else {
+		log(DEBUG) << "\t - Output:\t" << m_str;
+		log(DEBUG) << "\t - Expected:\t" << expected_output;
+		log(DEBUG) << "\t - test polyMulti({" << x << "}, {" << y << "}) FAILED";
+	}
+
+	return passed;
+}
+
 bool testXTimes(std::string input, std::string expected_output) {
 	bool passed = false;
 	std::cout << "test - xTimes() -->" << endl;
 	unsigned char* a = util::hexToChar(input);
-	unsigned char xTimes57 = util::xTimes(a[0]);
-	std::string xTimes57_str = util::charToHex(xTimes57);
+	unsigned char xt = util::xTimes(a[0]);
+	std::string xt_str = util::charToHex(xt);
 
-	if( !xTimes57_str.compare(expected_output) ) {
+	if( !xt_str.compare(expected_output) ) {
 		std::cout << "\t\033[1;32m - test xTimes({" << input << "}) PASSED\033[0m\n";
 		passed = true;
 	} else {
 		std::cout << "\t\033[1;31m - test xTimes({" << input << "}) FAILED\033[0m\n";
 	}
-
-	//	std::cout << "xtimes({" << input << "}) = " << xTimes57_str << endl;
 
 	return passed;
 }
