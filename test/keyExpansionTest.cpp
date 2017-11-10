@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include <string>
-#include "../src/util/util.h"
+//#include "../src/util/util.h"
 #include "../includes/state.h"
 
 // this was necessary to access private properties of AES class.

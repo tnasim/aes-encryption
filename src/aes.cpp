@@ -8,7 +8,7 @@
 using namespace std;
 
 AES::AES(unsigned char key[], int keySize) {
-	cout << "Starting AES Service..." << endl;
+	log(DEBUG) << "Starting AES Service...";
 
 	currentround = 0;
 
@@ -18,15 +18,15 @@ AES::AES(unsigned char key[], int keySize) {
 	
 	Nr = Nk + 6; // if Key Length is 4, there will be 10 rounds.
 
-	cout << "Nb: " << Nb << ", Nk: " << Nk << ", Nr: " << Nr << endl;
+	log(INFO) << "AES Properties -->" << "\n\tNb: " << Nb << ",\n\tNk: " << Nk << ",\n\tNr: " << Nr;
 
-	cout << "Initializing Key..." << endl;
+	log(DEBUG) << "Initializing Key...";
 
 	initKey(key);
 
 	w = new struct word[Nb*(Nr + 1)];
 
-	cout << "Beginning Key Expansion" << endl;
+	log(DEBUG) << "Beginning Key Expansion";
 	KeyExpansion();
 }
 
@@ -80,24 +80,24 @@ void AES::KeyExpansion() {
 	while (i < Nb * (Nr + 1)) 
 	{
 		temp = w[i-1];
-//		std::cout << "temp: " << temp.hex() << std::endl;
+//		log(DEBUG) << "temp: " << temp.hex();
 		if (i%Nk == 0)
 		{
 			temp.rotWord();
-//			std::cout << "After RotWord(): " << temp.hex() << std::endl;
+//			log(DEBUG) << "After RotWord(): " << temp.hex();
 			temp.subWord();
-//			std::cout << "After SubWord(): " << temp.hex() << std::endl;
+//			log(DEBUG) << "After SubWord(): " << temp.hex();
 			//need to use i-1 because index starts at 1 here.
 			temp = temp ^ rcon[(i-1)/Nk];
-//			std::cout << "Rcon[i/Nk]: " << rcon[(i-1)/Nk].hex() << std::endl;
-//			std::cout << "XOR with Rcon: " << temp.hex() << std::endl;
+//			log(DEBUG) << "Rcon[i/Nk]: " << rcon[(i-1)/Nk].hex();
+//			log(DEBUG) << "XOR with Rcon: " << temp.hex();
 			//temp = SubWord(RotWord(temp))^Rcon[i/Nk];
 		} else if (Nk > 6 && (i % Nk) == 4) {
 			temp.subWord();
 		}
-//		std::cout << "w[i-Nk]: " << w[i-Nk].hex() << std::endl;
+//		log(DEBUG) << "w[i-Nk]: " << w[i-Nk].hex();
 		w[i] = temp ^ w[i-Nk];
-//		std::cout << "w[i]: " << w[i].hex() << std::endl;
+//		log(DEBUG) << "w[i]: " << w[i].hex();
 		i++;
 	}
 	return;
@@ -121,7 +121,7 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
 	AddRoundKey(state, 0);
-	std::cout << "After AddRoundKey, 0" << std::endl;
+	log(DEBUG) << "After AddRoundKey, 0";
 	state->display();
 
 	 for (int round = 1; round < Nr; round++) {

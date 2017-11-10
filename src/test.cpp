@@ -10,14 +10,21 @@
 #include <cstring>
 #include <string>
 #include "util/util.h"
+#include "util/logger.h"
 #include "../includes/state.h"
 #include "../includes/aes.h"
 #include "../test/keyExpansionTest.h"
 
-const int KEY_SIZE = 128;
 
-//std::string sample_key		= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
-//std::string sample_input	= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
+/** Set the log level */
+logLevel LOG_LEVEL = TEST_PASS;
+//logLevel LOG_LEVEL = ERROR;
+//logLevel LOG_LEVEL = DEBUG;
+//logLevel LOG_LEVEL = INFO;
+//logLevel LOG_LEVEL = WARN;
+
+
+const int KEY_SIZE = 128;
 
 std::string sample_key_128_2			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 std::string sample_input_128_2			= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
@@ -90,7 +97,7 @@ int main(int argc, char** argv)
 {
 	//if (argc < 2)
 	//{
-	//	std::cout << "Need arguments: <text to encrypt>" << std::endl;
+	//	log(DEBUG) << "Need arguments: <text to encrypt>";
 	//	exit(1);
 	//}
 
@@ -99,9 +106,9 @@ int main(int argc, char** argv)
 	//char foo[4] = {'f','o','o',0};
 
 	if(runAllTests()) {
-		std::cout << "\033[1;32mALL TESTS PASSED\033[0m\n" << endl;
+		log(TEST_PASS) << "ALL TESTS PASSED\n";
 	} else {
-		std::cout << "SOME TEST(S) FAILED" << endl;
+		log(TEST_FAIL) << "SOME TEST(S) FAILED";
 	}
 
 	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
@@ -189,14 +196,14 @@ bool runAllTests() {
 
 bool testCipher(std::string input_data, std::string k, std::string expected_cipher) {
 	bool passed = false;
-	std::cout << "test - Cipher() -->" << endl;
+	log(DEBUG) << "test - Cipher() -->";
 
 	unsigned char* key = util::hexToChar(k);
 
 	std::string key_str = util::charToHex(key, 16);
-	std::cout << "\tKey:\t" << key_str << std::endl;
+	log(DEBUG) << "\tKey:\t" << key_str;
 
-	std::cout << "\tData:\t" << input_data << std::endl;
+	log(DEBUG) << "\tData:\t" << input_data;
 
 
 	// make char (byte-) array from input
@@ -212,12 +219,12 @@ bool testCipher(std::string input_data, std::string k, std::string expected_ciph
 	std::string ciphex = util::charToHex(out, 16);
 
 	if(!ciphex.compare(expected_cipher)) {
-		std::cout << "\t\033[1;32m - test Cipher() PASSED - Congratulations!!\033[0m\n";
+		log(TEST_PASS) << "\t - test Cipher() PASSED !!\n";
 		passed = true;
 	} else {
-		std::cout << "\t - Output Cipher:\t" << ciphex << std::endl;
-		std::cout << "\t - Expected Cipher:\t" << expected_cipher << std::endl;
-		std::cout << "\t\033[1;31m - test Cipher() FAILED\033[0m\n";
+		log(DEBUG) << "\t - Output Cipher:\t" << ciphex;
+		log(DEBUG) << "\t - Expected Cipher:\t" << expected_cipher;
+		log(TEST_FAIL) << "\t - test Cipher() FAILED\n";
 		passed = false;
 	}
 
@@ -226,8 +233,8 @@ bool testCipher(std::string input_data, std::string k, std::string expected_ciph
 
 bool testSubBytes(std::string input, std::string expected_output) {
 	bool passed = false;
-	std::cout << "test - SubBytes() -->" << endl;
-	std::cout << "\tInput:  " << input << endl;
+	log(DEBUG) << "test - SubBytes() -->";
+	log(DEBUG) << "\tInput:  " << input;
 	
 	unsigned char *in = util::hexToChar(input);
 	
@@ -236,25 +243,25 @@ bool testSubBytes(std::string input, std::string expected_output) {
 	unsigned char *out = state->getOutput();
 	
 	std::string substituted_str = util::charToHex(out, 16);
-	std::cout << "\tOutput: " << substituted_str << endl;
+	log(DEBUG) << "\tOutput: " << substituted_str;
 	if(!substituted_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - test SubBytes() PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - test SubBytes() PASSED\n";
 		passed = true;
 	} else {
-		std::cout << "\t - Output:\t" << substituted_str << std::endl;
-		std::cout << "\t - Expected:\t" << expected_output << std::endl;
-		std::cout << "\t\033[1;31m - test SubBytes() FAILED\033[0m\n";
+		log(DEBUG) << "\t - Output:\t" << substituted_str;
+		log(DEBUG) << "\t - Expected:\t" << expected_output;
+		log(TEST_FAIL) << "\t - test SubBytes() FAILED\n";
 		passed = false;
 	}
 	free(out);
-	std::cout << endl;
+
 	return passed;
 }
 
 bool testShiftRows(std::string input, std::string expected_output) {
 	bool passed = false;
-	std::cout << "test - ShiftRows() -->" << endl;
-	std::cout << "\tInput:  " << input << endl;
+	log(DEBUG) << "test - ShiftRows() -->";
+	log(DEBUG) << "\tInput:  " << input;
 	
 	unsigned char *in = util::hexToChar(input);
 	
@@ -263,25 +270,25 @@ bool testShiftRows(std::string input, std::string expected_output) {
 	unsigned char *out = state->getOutput();
 	
 	std::string shifted_str = util::charToHex(out, 16);
-	std::cout << "\tOutput: " << shifted_str << endl;
+	log(DEBUG) << "\tOutput: " << shifted_str;
 	if(!shifted_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - test ShiftRows() PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - test ShiftRows() PASSED\n";
 		passed = true;
 	} else {
-		std::cout << "\t - Output:\t" << shifted_str << std::endl;
-		std::cout << "\t - Expected:\t" << expected_output << std::endl;
-		std::cout << "\t\033[1;31m - test ShiftRows() FAILED\033[0m\n";
+		log(DEBUG) << "\t - Output:\t" << shifted_str;
+		log(DEBUG) << "\t - Expected:\t" << expected_output;
+		log(TEST_FAIL) << "\t - test ShiftRows() FAILED\n";
 		passed = false;
 	}
 	free(out);
-	std::cout << endl;
+
 	return passed;
 }
 
 bool testMixColumns(std::string input, std::string expected_output) {
 	bool passed = false;
-	std::cout << "test - MixColumns() -->" << endl;
-	std::cout << "\tInput:  " << input << endl;
+	log(DEBUG) << "test - MixColumns() -->";
+	log(DEBUG) << "\tInput:  " << input;
 	
 	unsigned char *in = util::hexToChar(input);
 	
@@ -290,25 +297,25 @@ bool testMixColumns(std::string input, std::string expected_output) {
 	unsigned char *out = state->getOutput();
 	
 	std::string mixed_str = util::charToHex(out, 16);
-	std::cout << "\tOutput: " << mixed_str << endl;
+	log(DEBUG) << "\tOutput: " << mixed_str;
 	if(!mixed_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - test MixColumns() PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - test MixColumns() PASSED\n";
 		passed = true;
 	} else {
-		std::cout << "\t - Output:\t" << mixed_str << std::endl;
-		std::cout << "\t - Expected:\t" << expected_output << std::endl;
-		std::cout << "\t\033[1;31m - test MixColumns() FAILED\033[0m\n";
+		log(DEBUG) << "\t - Output:\t" << mixed_str;
+		log(DEBUG) << "\t - Expected:\t" << expected_output;
+		log(TEST_FAIL) << "\t - test MixColumns() FAILED\n";
 		passed = false;
 	}
 	free(out);
-	std::cout << endl;
+
 	return passed;
 }
 
 bool testAddRoundKey(std::string input, std::string expected_output) {
 	bool passed = false;
-	std::cout << "Test - AddRoundKey() --" << endl;
-	std::cout << "\tInput:  " << input << endl;
+	log(DEBUG) << "Test - AddRoundKey() --";
+	log(DEBUG) << "\tInput:  " << input;
 	unsigned char* key = util::hexToChar(sample_key_128_1);
 	unsigned char* in = util::hexToChar(input);
 	State *state = new State(in);
@@ -321,41 +328,41 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 			q++;
 		}
 
-	std::cout << "Input: " << std::endl;
+	log(DEBUG) << "Input: ";
 	state->display();
-	std::cout << std::endl << "XOR: " << std::endl;
+	log(DEBUG) <<  "XOR: ";
 	sKey->display();
 
 	state->AddRoundKey(w, 4, 0);
 
 	unsigned char* out = state->getOutput();
 	std::string addKey_str = util::charToHex(out, 16);
-	std::cout << "\tOutput: " << addKey_str << endl;
+	log(DEBUG) << "\tOutput: " << addKey_str;
 	if(!addKey_str.compare(expected_output)) {
-		std::cout << "\t\033[1;32m - PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - PASSED\n";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - FAILED\033[0m\n";
+		log(TEST_FAIL) << "\t - FAILED\n";
 		passed = false;
 	}
 //	delete(state);
 //	delete(word);
 //	free(out);
-	std::cout << endl;
+
 	return passed;
 }
 
 bool testKeyExpansion(std::string key, std::string expected[]) {
 	bool passed = false;
-	std::cout << "test - KeyExpansion() -->" << endl;
-	std::cout << "\tInput key:  " << key << endl;
+	log(DEBUG) << "test - KeyExpansion() -->";
+	log(DEBUG) << "\tInput key:  " << key;
 
 	if( keyExpansionTest::test(key, expected, KEY_SIZE) ) {
-		std::cout << "\t\033[1;32m - test KeyExpansion() PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - test KeyExpansion() PASSED\n";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - test KeyExpansion() FAILED\033[0m\n";
+		log(TEST_FAIL) << "\t - test KeyExpansion() FAILED\n";
 	}
-	std::cout << endl;
+
 	return passed;
 }
