@@ -27,12 +27,12 @@ logLevel LOG_LEVEL = TEST_PASS;
 const int KEY_SIZE = 128;
 
 std::string sample_key_128_2			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
-std::string sample_input_128_2			= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
-std::string sample_cipher_128_2			= "69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a";
+std::string sample_plaintext_128_2			= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
+std::string sample_ciphertext_128_2			= "69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a";
 
 std::string sample_key_128_1 			= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
-std::string sample_input_128_1			= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
-std::string sample_cipher_128_1			= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
+std::string sample_plaintext_128_1		= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
+std::string sample_ciphertext_128_1		= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
 
 std::string sample_key_expanded_128_1[] =
 				{
@@ -101,7 +101,7 @@ bool testPolyMultiply(std::string x, std::string y, std::string expected_output)
 bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
 
 bool testKeyExpansion(std::string key, std::string expected[]);
-bool testCipher(std::string input_data, std::string k, std::string expected_cipher);
+bool testCipher(std::string data, std::string k, std::string result, bool inverse=false);
 
 int main(int argc, char** argv)
 {
@@ -122,9 +122,12 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
-	testCipher(sample_input_128_1, sample_key_128_1, sample_cipher_128_1);
+	testCipher(sample_plaintext_128_1, sample_key_128_1, sample_ciphertext_128_1);
+	testCipher(sample_plaintext_128_2, sample_key_128_2, sample_ciphertext_128_2);
 	
+	testCipher(sample_ciphertext_128_1, sample_key_128_1, sample_plaintext_128_1, true);
+	testCipher(sample_ciphertext_128_2, sample_key_128_2, sample_plaintext_128_2, true);
+
 	return 0;
 }
 
@@ -223,22 +226,6 @@ bool runAllTests() {
 	for(i = 0; i < mix_columns_total_samples && passed; i++) {
 		passed = passed && testMixColumns(mix_columns_sample[i][0], mix_columns_sample[i][1]);
 	}
-	/*// Appendix B: round 1
-	passed = passed &&
-			testMixColumns(
-						  "d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5", //input
-						  "04 66 81 e5 e0 cb 19 9a 48 f8 d3 7a 28 06 26 4c"); //expected output
-	// Appendix B: round 2
-	passed = passed &&
-			testMixColumns(
-						  "49 db 87 3b 45 39 53 89 7f 02 d2 f1 77 de 96 1a",
-						  "58 4d ca f1 1b 4b 5a ac db e7 ca a8 1b 6b b0 e5");
-	// Appendix B: round 5
-	passed = passed &&
-			testMixColumns(
-						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53",
-						  "25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0");*/
-
 
 	// InvSubBytes tests:
 	for(i = 0; i < sub_bytes_total_samples && passed; i++) {
@@ -259,37 +246,42 @@ bool runAllTests() {
 	
 }
 
-bool testCipher(std::string input_data, std::string k, std::string expected_cipher) {
+bool testCipher(std::string data, std::string k, std::string result, bool inverse) {
 	bool passed = false;
-	log(DEBUG) << "test - Cipher() -->";
+	log(DEBUG) << "test - " << (inverse?"Inv":"") << "Cipher() -->";
 
 	unsigned char* key = util::hexToChar(k);
 
 	std::string key_str = util::charToHex(key, 16);
 	log(DEBUG) << "\tKey:\t" << key_str;
 
-	log(DEBUG) << "\tData:\t" << input_data;
+	log(DEBUG) << "\tData:\t" << data;
 
 
 	// make char (byte-) array from input
-	unsigned char *in = util::hexToChar(input_data);
+	unsigned char *in = util::hexToChar(data);
 
 	unsigned char out[16] = {0};
 	unsigned char w[16] = {0};
 
 	// Test AES class:
 	AES *aes = new AES(key, KEY_SIZE);
-	aes->Cipher(in, out, w);
+	if(!inverse)
+		aes->Cipher(in, out, w);
+	else
+		aes->InvCipher(in, out, w);
 
-	std::string ciphex = util::charToHex(out, 16);
+	std::string result_hex = util::charToHex(out, 16);
 
-	if(!ciphex.compare(expected_cipher)) {
-		log(TEST_PASS) << "\t - test Cipher() PASSED !!\n";
+	if(!result_hex.compare(result)) {
+		log(DEBUG) << "\t - Output:\t" << result_hex;
+		log(DEBUG) << "\t - Expected:\t" << result;
+		log(TEST_PASS) << "\t - test " << (inverse?"Inv":"") << "Cipher() PASSED !!\n";
 		passed = true;
 	} else {
-		log(DEBUG) << "\t - Output Cipher:\t" << ciphex;
-		log(DEBUG) << "\t - Expected Cipher:\t" << expected_cipher;
-		log(TEST_FAIL) << "\t - test Cipher() FAILED\n";
+		log(DEBUG) << "\t - Output:\t" << result_hex;
+		log(DEBUG) << "\t - Expected:\t" << result;
+		log(TEST_FAIL) << "\t - test " << (inverse?"Inv":"") << "Cipher() FAILED\n";
 		passed = false;
 	}
 

@@ -127,11 +127,11 @@ void AES::KeyExpansion() {
 /**
  * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
  */
-void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[]) {
+void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned char w[]) {
 //	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
 	
 	// build the 'state' using input:
-	State *state = new State(input);
+	State *state = new State(plaintext);
 	
 	
 	/*printf("Initial 'state': \n");
@@ -139,7 +139,6 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	printf("\n");*/
 	
 	
-	//TODO: add the parameter to indicate the range of w to be used in the 'AddRoundKey' operation
 //	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
 	AddRoundKey(state, 0);
 	log(DEBUG) << "After AddRoundKey, 0";
@@ -162,5 +161,46 @@ void AES::Cipher(unsigned char input[], unsigned char output[], unsigned char w[
 	printf("\n");*/
 	
 	unsigned char* out = state->getOutput();
-	std::copy(out, (out + AES::WORD_SIZE), output);
+	std::copy(out, (out + AES::WORD_SIZE), ciphertext);
+}
+
+
+/**
+ * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
+ */
+void AES::InvCipher(unsigned char ciphertext[], unsigned char plaintext[], unsigned char w[]) {
+//	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
+
+	// build the 'state' using input:
+	State *state = new State(ciphertext);
+
+
+	/*printf("Initial 'state': \n");
+	state->display();
+	printf("\n");*/
+
+
+//	AddRoundKey(state, w[Nr*Nb, (Nr+1)(Nb-1)); // Sec. 5.3.4
+	AddRoundKey(state, Nr);
+	log(DEBUG) << "After AddRoundKey, 0";
+	state->display();
+
+	 for (int round = Nr-1; round > 0; round--) {
+		InvShiftRows(state); // See Sec. 5.4.1
+		InvSubBytes(state); // See Sec. 5.4.2
+		AddRoundKey(state, round); // Sec. 5.3.4
+		InvMixColumns(state); // See Sec. 5.3.3
+	 }
+
+	InvShiftRows(state);
+	InvSubBytes(state);
+
+	AddRoundKey(state, 0);
+
+	/*printf("Final 'state': \n");
+	state->display();
+	printf("\n");*/
+
+	unsigned char* out = state->getOutput();
+	std::copy(out, (out + AES::WORD_SIZE), plaintext);
 }

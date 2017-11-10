@@ -117,7 +117,12 @@ public:
     /**
      * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
      */
-    void Cipher(unsigned char input[], unsigned char output[], unsigned char w[]);
+    void Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned char w[]);
+
+    /**
+	 * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
+	 */
+	void InvCipher(unsigned char ciphertext[], unsigned char plaintext[], unsigned char w[]);
      
 
 };
