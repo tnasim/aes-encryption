@@ -161,6 +161,24 @@ const std::string shift_rows_sample[][2] =
 				"e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53"
 			}
 		};
+
+const int mix_columns_total_samples = 3;
+const std::string mix_columns_sample[][2] =
+		{
+			{ // Appendix B: round 1
+				"d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5",
+				"04 66 81 e5 e0 cb 19 9a 48 f8 d3 7a 28 06 26 4c"
+			},
+			{ // Appendix B: round 2
+				"49 db 87 3b 45 39 53 89 7f 02 d2 f1 77 de 96 1a",
+				"58 4d ca f1 1b 4b 5a ac db e7 ca a8 1b 6b b0 e5"
+			},
+			{ // Appendix B: round 5
+				"e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53",
+				"25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0"
+			}
+		};
+
 /**
  * Tests individual methods using sample inputs.
  * Test sample values are taken from FIPS-197 specification.
@@ -202,7 +220,10 @@ bool runAllTests() {
 	passed = passed && testPolyMultiply("bf", "02", "65");
 
 	// MixColumns tests:
-	// Appendix B: round 1
+	for(i = 0; i < mix_columns_total_samples && passed; i++) {
+		passed = passed && testMixColumns(mix_columns_sample[i][0], mix_columns_sample[i][1]);
+	}
+	/*// Appendix B: round 1
 	passed = passed &&
 			testMixColumns(
 						  "d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5", //input
@@ -216,7 +237,7 @@ bool runAllTests() {
 	passed = passed &&
 			testMixColumns(
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53",
-						  "25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0");
+						  "25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0");*/
 
 
 	// InvSubBytes tests:
@@ -227,6 +248,11 @@ bool runAllTests() {
 	// InvShiftRows tests:
 	for(i = 0; i < shift_rows_total_samples && passed; i++) {
 		passed = passed && testShiftRows(shift_rows_sample[i][1], shift_rows_sample[i][0], true);
+	}
+
+	// InvMixColumns tests:
+	for(i = 0; i < mix_columns_total_samples && passed; i++) {
+		passed = passed && testMixColumns(mix_columns_sample[i][1], mix_columns_sample[i][0], true);
 	}
 
 	return passed;

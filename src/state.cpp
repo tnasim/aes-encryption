@@ -285,7 +285,51 @@ void State::InvShiftRows() {
  */
 void State::InvMixColumns() {
 
-	//TODO:  need to implement
+	int i;
+	unsigned char s0, s1, s2, s3;
+	unsigned char a, b, c, d;
+
+
+	for(i=0;i<4;i++){
+
+		s0 = s[0][i];
+		s1 = s[1][i];
+		s2 = s[2][i];
+		s3 = s[3][i];
+
+		/**
+		 * Multiply the column by a(x) in GF(2^8)
+		 * a(x) = {0b}.x^3 + {0d}.x^2 + {09}.x + {0e}
+		 *
+		 * hex: 0e, 0b, 0d, 09
+		 * dec: 14, 11, 13, 09
+		 * */
+		a = 	util::polyMultiply( s0, 14 )
+			^ 	util::polyMultiply( s1, 11 )
+			^	util::polyMultiply( s2, 13 )
+			^	util::polyMultiply( s3,  9 );
+
+		b = 	util::polyMultiply( s0,  9 )
+			^ 	util::polyMultiply( s1, 14 )
+			^	util::polyMultiply( s2, 11 )
+			^	util::polyMultiply( s3, 13 );
+
+		c = 	util::polyMultiply( s0, 13 )
+			^ 	util::polyMultiply( s1,  9 )
+			^	util::polyMultiply( s2, 14 )
+			^	util::polyMultiply( s3, 11 );
+
+		d = 	util::polyMultiply( s0, 11 )
+			^ 	util::polyMultiply( s1, 13 )
+			^	util::polyMultiply( s2,  9 )
+			^	util::polyMultiply( s3, 14 );
+
+		s[0][i] = a;
+		s[1][i] = b;
+		s[2][i] = c;
+		s[3][i] = d;
+
+	}
 
 }
 
