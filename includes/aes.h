@@ -81,6 +81,21 @@ private:
      * Perform 'AddRoundKey' operation on the state.
      */
     void AddRoundKey(State *state, int round);
+
+    /**
+	 * Perform 'InvSubBytes' operation on the state.
+	 */
+	void InvSubBytes(State *state);
+
+	/**
+	 * Perform 'InvShiftRows' operation on the state.
+	 */
+	void InvShiftRows(State *state);
+
+	/**
+	 * Perform 'InvMixColumns' operation on the state.
+	 */
+	void InvMixColumns(State *state);
 	
 	/**
 	 * Expands key 

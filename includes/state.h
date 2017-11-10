@@ -29,7 +29,10 @@ private:
 public:
 	
 	// 5.1.1: Fig. 7
-	static const char sbox[16][16][3];	
+	static const char sbox[16][16][3];
+
+	// 5.3.2: Fig. 14
+	static const char sbox_inv[16][16][3];
 
 	static int const display_style = DISPLAY_FANCY;
 	//static int const display_style = DISPLAY_NORMAL;
@@ -83,6 +86,21 @@ public:
 	 */
 	void AddRoundKey(struct word w[], int round, int Nb);
 	
+	/**
+	 * Performs 'SubBytes' operation on this state
+	 */
+	void InvSubBytes();
+
+	/**
+	 * Performs 'ShiftRows' operation on this state
+	 */
+	void InvShiftRows();
+
+	/**
+	 * Performs 'MixColumns' operation on this state
+	 */
+	void InvMixColumns();
+
 	/**
 	 * Display the current contents of the state
 	 */

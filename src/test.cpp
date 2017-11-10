@@ -86,9 +86,9 @@ using namespace util;
 using namespace keyExpansionTest;
 
 bool runAllTests();
-bool testSubBytes(std::string input, std::string expected_output);
-bool testShiftRows(std::string input, std::string expected_output);
-bool testMixColumns(std::string input, std::string expected_output);
+bool testSubBytes(std::string input, std::string expected_output, bool inverse=false);
+bool testShiftRows(std::string input, std::string expected_output, bool inverse=false);
+bool testMixColumns(std::string input, std::string expected_output, bool inverse=false);
 bool testAddRoundKey(std::string input, std::string expected_output);
 bool testKeyExpansion(std::string key, std::string expected[]);
 bool testCipher(std::string input_data, std::string k, std::string expected_cipher);
@@ -117,49 +117,58 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+const int sub_bytes_total_samples = 3;
+const std::string sub_bytes_sample[][2] =
+		{
+			{ // Appendix B: round 1
+				"19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08",
+				"d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30"
+			},
+			{ // Appendix B: round 2
+				"a4 9c 7f f2 68 9f 35 2b 6b 5b ea 43 02 6a 50 49",
+				"49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b"
+			},
+			{ // Appendix B: round 5
+				"e0 92 7f e8 c8 63 63 c0 d9 b1 35 50 85 b8 be 01",
+				"e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c"
+			}
+		};
+
+const int shift_rows_total_samples = 3;
+const std::string shift_rows_sample[][2] =
+		{
+			{ // Appendix B: round 1
+				"d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30",
+				"d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5"
+			},
+			{ // Appendix B: round 2
+				"49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b",
+				"49 db 87 3b 45 39 53 89 7f 02 d2 f1 77 de 96 1a"
+			},
+			{ // Appendix B: round 5
+				"e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
+				"e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53"
+			}
+		};
 /**
  * Tests individual methods using sample inputs.
  * Test sample values are taken from FIPS-197 specification.
  */
 bool runAllTests() {
 	bool passed = true;
-	
+	int i;
 	// SubBytes tests:
-	// Appendix B: round 1
-	passed = passed &&
-			testSubBytes(
-						 "19 3d e3 be a0 f4 e2 2b 9a c6 8d 2a e9 f8 48 08", //input
-						 "d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30"); //expected output
-	// Appendix B: round 2
-	passed = passed &&
-			testSubBytes(
-						 "a4 9c 7f f2 68 9f 35 2b 6b 5b ea 43 02 6a 50 49",
-						 "49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b");
-	// Appendix B: round 5
-	passed = passed &&
-			testSubBytes(
-						 "e0 92 7f e8 c8 63 63 c0 d9 b1 35 50 85 b8 be 01",
-						 "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c");
-	
+	for(i = 0; i < sub_bytes_total_samples && passed; i++) {
+		passed = passed && testSubBytes(sub_bytes_sample[i][0], sub_bytes_sample[i][1]);
+	}
 	
 	// ShiftRows tests:
-	// Appendix B: round 1
-	passed = passed &&
-			testShiftRows(
-						  "d4 27 11 ae e0 bf 98 f1 b8 b4 5d e5 1e 41 52 30", //input
-						  "d4 bf 5d 30 e0 b4 52 ae b8 41 11 f1 1e 27 98 e5"); //expected output
-	// Appendix B: round 2
-	passed = passed &&
-			testShiftRows(
-						  "49 de d2 89 45 db 96 f1 7f 39 87 1a 77 02 53 3b",
-						  "49 db 87 3b 45 39 53 89 7f 02 d2 f1 77 de 96 1a");
-	// Appendix B: round 5
-	passed = passed &&
-			testShiftRows(
-						  "e1 4f d2 9b e8 fb fb ba 35 c8 96 53 97 6c ae 7c",
-						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53");
+	for(i = 0; i < shift_rows_total_samples && passed; i++) {
+		passed = passed && testShiftRows(shift_rows_sample[i][0], shift_rows_sample[i][1]);
+	}
 
 
+	// AddRoundKey tests:
     passed = passed &&
     		testAddRoundKey(
     				"32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34", 
@@ -188,7 +197,16 @@ bool runAllTests() {
 						  "e1 fb 96 7c e8 c8 ae 9b 35 6c d2 ba 97 4f fb 53",
 						  "25 d1 a9 ad bd 11 d1 68 b6 3a 33 8e 4c 4c c0 b0");
 
- 
+
+	// InvSubBytes tests:
+	for(i = 0; i < sub_bytes_total_samples && passed; i++) {
+		passed = passed && testSubBytes(sub_bytes_sample[i][1], sub_bytes_sample[i][0], true);
+	}
+
+	// InvShiftRows tests:
+	for(i = 0; i < shift_rows_total_samples && passed; i++) {
+		passed = passed && testShiftRows(shift_rows_sample[i][1], shift_rows_sample[i][0], true);
+	}
 	
 	return passed;
 	
@@ -231,26 +249,29 @@ bool testCipher(std::string input_data, std::string k, std::string expected_ciph
 	return passed;
 }
 
-bool testSubBytes(std::string input, std::string expected_output) {
+bool testSubBytes(std::string input, std::string expected_output, bool inverse) {
 	bool passed = false;
-	log(DEBUG) << "test - SubBytes() -->";
+	log(DEBUG) << "test - "<<(inverse?"Inv":"")<<"SubBytes() -->";
 	log(DEBUG) << "\tInput:  " << input;
 	
 	unsigned char *in = util::hexToChar(input);
 	
 	State *state = new State(in);
-	state->SubBytes();
+	if(!inverse)
+		state->SubBytes();
+	else
+		state->InvSubBytes();
 	unsigned char *out = state->getOutput();
 	
 	std::string substituted_str = util::charToHex(out, 16);
 	log(DEBUG) << "\tOutput: " << substituted_str;
 	if(!substituted_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test SubBytes() PASSED\n";
+		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"")<<"SubBytes() PASSED\n";
 		passed = true;
 	} else {
 		log(DEBUG) << "\t - Output:\t" << substituted_str;
 		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test SubBytes() FAILED\n";
+		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"")<<"SubBytes() FAILED\n";
 		passed = false;
 	}
 	free(out);
@@ -258,26 +279,29 @@ bool testSubBytes(std::string input, std::string expected_output) {
 	return passed;
 }
 
-bool testShiftRows(std::string input, std::string expected_output) {
+bool testShiftRows(std::string input, std::string expected_output, bool inverse) {
 	bool passed = false;
-	log(DEBUG) << "test - ShiftRows() -->";
+	log(DEBUG) << "test - "<<(inverse?"Inv":"")<<"ShiftRows() -->";
 	log(DEBUG) << "\tInput:  " << input;
 	
 	unsigned char *in = util::hexToChar(input);
 	
 	State *state = new State(in);
-	state->ShiftRows();
+	if(!inverse)
+		state->ShiftRows();
+	else
+		state->InvShiftRows();
 	unsigned char *out = state->getOutput();
 	
 	std::string shifted_str = util::charToHex(out, 16);
 	log(DEBUG) << "\tOutput: " << shifted_str;
 	if(!shifted_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test ShiftRows() PASSED\n";
+		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"")<<"ShiftRows() PASSED\n";
 		passed = true;
 	} else {
 		log(DEBUG) << "\t - Output:\t" << shifted_str;
 		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test ShiftRows() FAILED\n";
+		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"")<<"ShiftRows() FAILED\n";
 		passed = false;
 	}
 	free(out);
@@ -285,26 +309,29 @@ bool testShiftRows(std::string input, std::string expected_output) {
 	return passed;
 }
 
-bool testMixColumns(std::string input, std::string expected_output) {
+bool testMixColumns(std::string input, std::string expected_output, bool inverse) {
 	bool passed = false;
-	log(DEBUG) << "test - MixColumns() -->";
+	log(DEBUG) << "test - "<<(inverse?"Inv":"")<<"MixColumns() -->";
 	log(DEBUG) << "\tInput:  " << input;
 	
 	unsigned char *in = util::hexToChar(input);
 	
 	State *state = new State(in);
-	state->MixColumns();
+	if(!inverse)
+		state->MixColumns();
+	else
+		state->InvMixColumns();
 	unsigned char *out = state->getOutput();
 	
 	std::string mixed_str = util::charToHex(out, 16);
 	log(DEBUG) << "\tOutput: " << mixed_str;
 	if(!mixed_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test MixColumns() PASSED\n";
+		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"")<<"MixColumns() PASSED\n";
 		passed = true;
 	} else {
 		log(DEBUG) << "\t - Output:\t" << mixed_str;
 		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test MixColumns() FAILED\n";
+		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"")<<"MixColumns() FAILED\n";
 		passed = false;
 	}
 	free(out);

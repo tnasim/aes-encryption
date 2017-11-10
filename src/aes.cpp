@@ -62,6 +62,27 @@ void AES::AddRoundKey(State *state, int round) {
     state->AddRoundKey(w, round, Nb);
 }
 
+/**
+ * Perform 'InvSubBytes' operation on the state.
+ */
+void AES::InvSubBytes(State *state) {
+	state->InvSubBytes();
+}
+
+/**
+ * Perform 'InvShiftRows' operation on the state.
+ */
+void AES::InvShiftRows(State *state) {
+    state->InvShiftRows();
+}
+
+/**
+ * Perform 'InvMixColumns' operation on the state.
+ */
+void AES::InvMixColumns(State *state) {
+    state->InvMixColumns();
+}
+
 void AES::KeyExpansion() {
 //	printf("Key Expansion - Testing\n");
 	//temporary word to hold a value
