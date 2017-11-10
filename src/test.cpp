@@ -85,11 +85,19 @@ std::string sample_key_expanded_128_1[] =
 using namespace util;
 using namespace keyExpansionTest;
 
+
+/** the transformation types **/
+enum trans_type { SUB_BYTES, SHIFT_ROWS, MIX_COLUMNS, ADD_ROUND_KEY};
+std::string trans_name[] = { "SubBytes", "ShiftRows", "MixColumns", "AddRoundKey"};
+
 bool runAllTests();
 bool testSubBytes(std::string input, std::string expected_output, bool inverse=false);
 bool testShiftRows(std::string input, std::string expected_output, bool inverse=false);
 bool testMixColumns(std::string input, std::string expected_output, bool inverse=false);
 bool testAddRoundKey(std::string input, std::string expected_output);
+
+bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
+
 bool testKeyExpansion(std::string key, std::string expected[]);
 bool testCipher(std::string input_data, std::string k, std::string expected_cipher);
 
@@ -250,93 +258,15 @@ bool testCipher(std::string input_data, std::string k, std::string expected_ciph
 }
 
 bool testSubBytes(std::string input, std::string expected_output, bool inverse) {
-	bool passed = false;
-	log(DEBUG) << "test - "<<(inverse?"Inv":"")<<"SubBytes() -->";
-	log(DEBUG) << "\tInput:  " << input;
-	
-	unsigned char *in = util::hexToChar(input);
-	
-	State *state = new State(in);
-	if(!inverse)
-		state->SubBytes();
-	else
-		state->InvSubBytes();
-	unsigned char *out = state->getOutput();
-	
-	std::string substituted_str = util::charToHex(out, 16);
-	log(DEBUG) << "\tOutput: " << substituted_str;
-	if(!substituted_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"")<<"SubBytes() PASSED\n";
-		passed = true;
-	} else {
-		log(DEBUG) << "\t - Output:\t" << substituted_str;
-		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"")<<"SubBytes() FAILED\n";
-		passed = false;
-	}
-	free(out);
-
-	return passed;
+	return testTransformation(SUB_BYTES, input, expected_output, inverse);
 }
 
 bool testShiftRows(std::string input, std::string expected_output, bool inverse) {
-	bool passed = false;
-	log(DEBUG) << "test - "<<(inverse?"Inv":"")<<"ShiftRows() -->";
-	log(DEBUG) << "\tInput:  " << input;
-	
-	unsigned char *in = util::hexToChar(input);
-	
-	State *state = new State(in);
-	if(!inverse)
-		state->ShiftRows();
-	else
-		state->InvShiftRows();
-	unsigned char *out = state->getOutput();
-	
-	std::string shifted_str = util::charToHex(out, 16);
-	log(DEBUG) << "\tOutput: " << shifted_str;
-	if(!shifted_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"")<<"ShiftRows() PASSED\n";
-		passed = true;
-	} else {
-		log(DEBUG) << "\t - Output:\t" << shifted_str;
-		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"")<<"ShiftRows() FAILED\n";
-		passed = false;
-	}
-	free(out);
-
-	return passed;
+	return testTransformation(SHIFT_ROWS, input, expected_output, inverse);
 }
 
 bool testMixColumns(std::string input, std::string expected_output, bool inverse) {
-	bool passed = false;
-	log(DEBUG) << "test - "<<(inverse?"Inv":"")<<"MixColumns() -->";
-	log(DEBUG) << "\tInput:  " << input;
-	
-	unsigned char *in = util::hexToChar(input);
-	
-	State *state = new State(in);
-	if(!inverse)
-		state->MixColumns();
-	else
-		state->InvMixColumns();
-	unsigned char *out = state->getOutput();
-	
-	std::string mixed_str = util::charToHex(out, 16);
-	log(DEBUG) << "\tOutput: " << mixed_str;
-	if(!mixed_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"")<<"MixColumns() PASSED\n";
-		passed = true;
-	} else {
-		log(DEBUG) << "\t - Output:\t" << mixed_str;
-		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"")<<"MixColumns() FAILED\n";
-		passed = false;
-	}
-	free(out);
-
-	return passed;
+	return testTransformation(MIX_COLUMNS, input, expected_output, inverse);
 }
 
 bool testAddRoundKey(std::string input, std::string expected_output) {
@@ -390,6 +320,47 @@ bool testKeyExpansion(std::string key, std::string expected[]) {
 	} else {
 		log(TEST_FAIL) << "\t - test KeyExpansion() FAILED\n";
 	}
+
+	return passed;
+}
+
+bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse) {
+	bool passed = false;
+	log(DEBUG) << "test - "<<(inverse?"Inv":"") << trans_name[transformation] <<"() -->";
+	log(DEBUG) << "\tInput:  " << input;
+
+	unsigned char *in = util::hexToChar(input);
+
+	State *state = new State(in);
+	if(!inverse) {
+		if(transformation == SUB_BYTES)
+			state->SubBytes();
+		else if(transformation == SHIFT_ROWS)
+			state->ShiftRows();
+		else if (transformation == MIX_COLUMNS)
+			state->MixColumns();
+	} else {
+		if(transformation == SUB_BYTES)
+			state->InvSubBytes();
+		else if(transformation == SHIFT_ROWS)
+			state->InvShiftRows();
+		else if (transformation == MIX_COLUMNS)
+			state->InvMixColumns();
+	}
+	unsigned char *out = state->getOutput();
+
+	std::string substituted_str = util::charToHex(out, 16);
+	log(DEBUG) << "\tOutput: " << substituted_str;
+	if(!substituted_str.compare(expected_output)) {
+		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"") << trans_name[transformation] <<"() PASSED\n";
+		passed = true;
+	} else {
+		log(DEBUG) << "\t - Output:\t" << substituted_str;
+		log(DEBUG) << "\t - Expected:\t" << expected_output;
+		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"") << trans_name[transformation] <<"() FAILED\n";
+		passed = false;
+	}
+	free(out);
 
 	return passed;
 }
