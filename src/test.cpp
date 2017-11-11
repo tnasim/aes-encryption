@@ -19,7 +19,8 @@ using namespace util;
 using namespace keyExpansionTest;
 
 /** Set the log level */
-logLevel LOG_LEVEL = TEST_PASS;
+logLevel LOG_LEVEL = TEST;
+//logLevel LOG_LEVEL = TEST_PASS;
 //logLevel LOG_LEVEL = ERROR;
 //logLevel LOG_LEVEL = DEBUG;
 //logLevel LOG_LEVEL = INFO;
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
 {
 	//if (argc < 2)
 	//{
-	//	log(DEBUG) << "Need arguments: <text to encrypt>";
+	//	log(TEST) << "Need arguments: <text to encrypt>";
 	//	exit(1);
 	//}
 
@@ -267,14 +268,14 @@ bool runAllTests() {
 
 bool testCipher(std::string data, std::string k, std::string result, bool inverse) {
 	bool passed = false;
-	log(DEBUG) << "test - " << (inverse?"Inv":"") << "Cipher() -->";
+	log(TEST) << "test - " << (inverse?"Inv":"") << "Cipher() -->";
 
 	unsigned char* key = util::hexToChar(k);
 
 	std::string key_str = util::charToHex(key, 16);
-	log(DEBUG) << "\tKey:\t" << key_str;
+	log(TEST) << "\tKey:\t" << key_str;
 
-	log(DEBUG) << "\tData:\t" << data;
+	log(TEST) << "\tData:\t" << data;
 
 
 	// make char (byte-) array from input
@@ -293,14 +294,14 @@ bool testCipher(std::string data, std::string k, std::string result, bool invers
 	std::string result_hex = util::charToHex(out, 16);
 
 	if(!result_hex.compare(result)) {
-		log(DEBUG) << "\t - Output:\t" << result_hex;
-		log(DEBUG) << "\t - Expected:\t" << result;
-		log(TEST_PASS) << "\t - test " << (inverse?"Inv":"") << "Cipher() PASSED !!\n";
+		log(TEST) << "\t - Output:\t" << result_hex;
+		log(TEST) << "\t - Expected:\t" << result;
+		log(TEST_PASS) << "\t - test " << (inverse?"Inv":"") << "Cipher() PASSED !!";
 		passed = true;
 	} else {
-		log(DEBUG) << "\t - Output:\t" << result_hex;
-		log(DEBUG) << "\t - Expected:\t" << result;
-		log(TEST_FAIL) << "\t - test " << (inverse?"Inv":"") << "Cipher() FAILED\n";
+		log(TEST) << "\t - Output:\t" << result_hex;
+		log(TEST) << "\t - Expected:\t" << result;
+		log(TEST_FAIL) << "\t - test " << (inverse?"Inv":"") << "Cipher() FAILED";
 		passed = false;
 	}
 
@@ -321,8 +322,8 @@ bool testMixColumns(std::string input, std::string expected_output, bool inverse
 
 bool testAddRoundKey(std::string input, std::string expected_output) {
 	bool passed = false;
-	log(DEBUG) << "Test - AddRoundKey() --";
-	log(DEBUG) << "\tInput:  " << input;
+	log(TEST) << "Test - AddRoundKey() --";
+	log(TEST) << "\tInput:  " << input;
 	unsigned char* key = util::hexToChar(sample_key_128_1);
 	unsigned char* in = util::hexToChar(input);
 	State *state = new State(in);
@@ -341,12 +342,12 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 
 	unsigned char* out = state->getOutput();
 	std::string addKey_str = util::charToHex(out, 16);
-	log(DEBUG) << "\tOutput: " << addKey_str;
+	log(TEST) << "\tOutput: " << addKey_str;
 	if(!addKey_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - PASSED\n";
+		log(TEST_PASS) << "\t - PASSED";
 		passed = true;
 	} else {
-		log(TEST_FAIL) << "\t - FAILED\n";
+		log(TEST_FAIL) << "\t - FAILED";
 		passed = false;
 	}
 //	delete(state);
@@ -358,8 +359,8 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 
 bool testKeyExpansion(std::string key, std::string expected[]) {
 	bool passed = false;
-	log(DEBUG) << "test - KeyExpansion() -->";
-	log(DEBUG) << "\tInput key:  " << key;
+	log(TEST) << "test - KeyExpansion() -->";
+	log(TEST) << "\tInput key:  " << key;
 
 	if( keyExpansionTest::test(key, expected, KEY_SIZE) ) {
 		log(TEST_PASS) << "\t - test KeyExpansion() PASSED\n";
@@ -373,8 +374,8 @@ bool testKeyExpansion(std::string key, std::string expected[]) {
 
 bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse) {
 	bool passed = false;
-	log(DEBUG) << "test - "<<(inverse?"Inv":"") << trans_name[transformation] <<"() -->";
-	log(DEBUG) << "\tInput:  " << input;
+	log(TEST) << "test - "<<(inverse?"Inv":"") << trans_name[transformation] <<"() -->";
+	log(TEST) << "\tInput:  " << input;
 
 	unsigned char *in = util::hexToChar(input);
 
@@ -397,14 +398,14 @@ bool testTransformation(trans_type transformation, std::string input, std::strin
 	unsigned char *out = state->getOutput();
 
 	std::string substituted_str = util::charToHex(out, 16);
-	log(DEBUG) << "\tOutput: " << substituted_str;
+	log(TEST) << "\tOutput: " << substituted_str;
 	if(!substituted_str.compare(expected_output)) {
-		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"") << trans_name[transformation] <<"() PASSED\n";
+		log(TEST_PASS) << "\t - test "<<(inverse?"Inv":"") << trans_name[transformation] <<"() PASSED";
 		passed = true;
 	} else {
-		log(DEBUG) << "\t - Output:\t" << substituted_str;
-		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"") << trans_name[transformation] <<"() FAILED\n";
+		log(TEST) << "\t - Output:\t" << substituted_str;
+		log(TEST) << "\t - Expected:\t" << expected_output;
+		log(TEST_FAIL) << "\t - test "<<(inverse?"Inv":"") << trans_name[transformation] <<"() FAILED";
 		passed = false;
 	}
 	free(out);
@@ -414,19 +415,19 @@ bool testTransformation(trans_type transformation, std::string input, std::strin
 
 bool testPolyMultiply(std::string x, std::string y, std::string expected_output) {
 	bool passed = false;
-	std::cout << "test - polyMultiply() -->" << endl;
+	log(TEST) << "test - polyMultiply() -->";
 	unsigned char* a = util::hexToChar(x);
 	unsigned char* b = util::hexToChar(y);
 	unsigned char m = util::polyMultiply(a[0], b[0]);
 	std::string m_str = util::charToHex(m);
 
 	if( !m_str.compare(expected_output) ) {
-		std::cout << "\t\033[1;32m - test polyMulti({" << x << "}, {" << y << "}) PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - test polyMulti({" << x << "}, {" << y << "}) PASSED";
 		passed = true;
 	} else {
-		log(DEBUG) << "\t - Output:\t" << m_str;
-		log(DEBUG) << "\t - Expected:\t" << expected_output;
-		log(DEBUG) << "\t - test polyMulti({" << x << "}, {" << y << "}) FAILED";
+		log(TEST) << "\t - Output:\t" << m_str;
+		log(TEST) << "\t - Expected:\t" << expected_output;
+		log(TEST_FAIL) << "\t - test polyMulti({" << x << "}, {" << y << "}) FAILED";
 	}
 
 	return passed;
@@ -434,16 +435,16 @@ bool testPolyMultiply(std::string x, std::string y, std::string expected_output)
 
 bool testXTimes(std::string input, std::string expected_output) {
 	bool passed = false;
-	std::cout << "test - xTimes() -->" << endl;
+	log(TEST) << "test - xTimes() -->";
 	unsigned char* a = util::hexToChar(input);
 	unsigned char xt = util::xTimes(a[0]);
 	std::string xt_str = util::charToHex(xt);
 
 	if( !xt_str.compare(expected_output) ) {
-		std::cout << "\t\033[1;32m - test xTimes({" << input << "}) PASSED\033[0m\n";
+		log(TEST_PASS) << "\t - test xTimes({" << input << "}) PASSED";
 		passed = true;
 	} else {
-		std::cout << "\t\033[1;31m - test xTimes({" << input << "}) FAILED\033[0m\n";
+		log(TEST_FAIL) << "\t - test xTimes({" << input << "}) FAILED";
 	}
 
 	return passed;

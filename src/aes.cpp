@@ -11,12 +11,12 @@ AES::AES(unsigned char key[], int keySize) {
 	currentround = 0;
 
 	Nb = AES::BLOCK_SIZE/AES::WORD_SIZE;
-	
+
 	Nk = keySize/AES::WORD_SIZE;
-	
+
 	Nr = Nk + 6; // if Key Length is 4, there will be 10 rounds.
 
-	log(INFO) << "AES Properties -->" << "\n\tNb: " << Nb << ",\n\tNk: " << Nk << ",\n\tNr: " << Nr;
+	log(DEBUG) << "AES Properties -->" << "\n\tNb: " << Nb << ",\n\tNk: " << Nk << ",\n\tNr: " << Nr;
 
 	log(DEBUG) << "Initializing Key...";
 
@@ -94,7 +94,7 @@ void AES::KeyExpansion() {
 
 	i = Nk;
 
-	while (i < Nb * (Nr + 1)) 
+	while (i < Nb * (Nr + 1))
 	{
 		temp = w[i-1];
 		if (i%Nk == 0)
@@ -115,28 +115,27 @@ void AES::KeyExpansion() {
 /**
  * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
  */
-void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned char w[]) {
-	
+void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[],
+		unsigned char w[]) {
+
 	// build the 'state' using input:
 	State *state = new State(plaintext);
 
 	// AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
 	AddRoundKey(state, 0);
-	log(DEBUG) << "After AddRoundKey, 0";
-	state->display();
 
-	 for (int round = 1; round < Nr; round++) {
+	for (int round = 1; round < Nr; round++) {
 		SubBytes(state); // Sec. 5.1.1
 		ShiftRows(state); // Sec. 5.1.2
 		MixColumns(state); // Sec. 5.1.3
 		AddRoundKey(state, round);
-	 }
+	}
 
 	SubBytes(state);
 	ShiftRows(state);
 
 	AddRoundKey(state, Nr);
-	
+
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), ciphertext);
 }
@@ -145,22 +144,21 @@ void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned
 /**
  * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
  */
-void AES::InvCipher(unsigned char ciphertext[], unsigned char plaintext[], unsigned char w[]) {
+void AES::InvCipher(unsigned char ciphertext[], unsigned char plaintext[],
+		unsigned char w[]) {
 
 	// build the 'state' using input:
 	State *state = new State(ciphertext);
 
 	// AddRoundKey(state, w[Nr*Nb, (Nr+1)(Nb-1)); // Sec. 5.3.4
 	AddRoundKey(state, Nr);
-	log(DEBUG) << "After AddRoundKey, 0";
-	state->display();
 
-	 for (int round = Nr-1; round > 0; round--) {
+	for (int round = Nr - 1; round > 0; round--) {
 		InvShiftRows(state); // Sec. 5.4.1
 		InvSubBytes(state); // Sec. 5.4.2
 		AddRoundKey(state, round); // Sec. 5.3.4
 		InvMixColumns(state); // Sec. 5.3.3
-	 }
+	}
 
 	InvShiftRows(state);
 	InvSubBytes(state);
