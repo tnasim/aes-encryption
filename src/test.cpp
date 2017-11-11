@@ -15,6 +15,8 @@
 #include "../includes/aes.h"
 #include "../test/keyExpansionTest.h"
 
+using namespace util;
+using namespace keyExpansionTest;
 
 /** Set the log level */
 logLevel LOG_LEVEL = TEST_PASS;
@@ -23,17 +25,73 @@ logLevel LOG_LEVEL = TEST_PASS;
 //logLevel LOG_LEVEL = INFO;
 //logLevel LOG_LEVEL = WARN;
 
+/** the transformation types **/
+enum trans_type { SUB_BYTES, SHIFT_ROWS, MIX_COLUMNS, ADD_ROUND_KEY};
+std::string trans_name[] = { "SubBytes", "ShiftRows", "MixColumns", "AddRoundKey"};
+
+bool runAllTests();
+bool testSubBytes(std::string input, std::string expected_output, bool inverse=false);
+bool testShiftRows(std::string input, std::string expected_output, bool inverse=false);
+bool testMixColumns(std::string input, std::string expected_output, bool inverse=false);
+bool testAddRoundKey(std::string input, std::string expected_output);
+bool testXTimes(std::string input, std::string expected_output);
+bool testPolyMultiply(std::string x, std::string y, std::string expected_output);
+
+bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
+
+bool testKeyExpansion(std::string key, std::string expected[]);
+bool testCipher(std::string data, std::string k, std::string result, bool inverse=false);
+
+int main(int argc, char** argv)
+{
+	//if (argc < 2)
+	//{
+	//	log(DEBUG) << "Need arguments: <text to encrypt>";
+	//	exit(1);
+	//}
+
+	//char* input = argv[1];
+	//int size = strlen(input);
+	//char foo[4] = {'f','o','o',0};
+
+	if(runAllTests()) {
+		log(TEST_PASS) << "ALL TESTS PASSED\n";
+	} else {
+		log(TEST_FAIL) << "SOME TEST(S) FAILED";
+		return 0;
+	}
+
+	return 0;
+}
+
 
 const int KEY_SIZE = 128;
 
-std::string sample_key_128_2			= "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
-std::string sample_plaintext_128_2			= "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff";
-std::string sample_ciphertext_128_2			= "69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a";
+struct test_set {
+	std::string plain;
+	std::string cipher;
+	std::string key;
+	test_set(std::string p, std::string c, std::string k) {
+		plain = p;
+		cipher = c;
+		key = k;
+	}
+};
+
+const int test_128_total_samples = 2;
+test_set test_128[] =
+	{
+		test_set(
+				"32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34", // plain
+				"39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32", // cipher
+				"2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c"), // key
+		test_set(
+				"00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff", // plain
+				"69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a", // cipher
+				"00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f") // key
+	};
 
 std::string sample_key_128_1 			= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
-std::string sample_plaintext_128_1		= "32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34";
-std::string sample_ciphertext_128_1		= "39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32";
-
 std::string sample_key_expanded_128_1[] =
 				{
 						"2b7e1516", //w[ 0]
@@ -81,55 +139,6 @@ std::string sample_key_expanded_128_1[] =
 						"e13f0cc8", //w[42]
 						"b6630ca6", //w[43]
 				};
-
-using namespace util;
-using namespace keyExpansionTest;
-
-
-/** the transformation types **/
-enum trans_type { SUB_BYTES, SHIFT_ROWS, MIX_COLUMNS, ADD_ROUND_KEY};
-std::string trans_name[] = { "SubBytes", "ShiftRows", "MixColumns", "AddRoundKey"};
-
-bool runAllTests();
-bool testSubBytes(std::string input, std::string expected_output, bool inverse=false);
-bool testShiftRows(std::string input, std::string expected_output, bool inverse=false);
-bool testMixColumns(std::string input, std::string expected_output, bool inverse=false);
-bool testAddRoundKey(std::string input, std::string expected_output);
-bool testXTimes(std::string input, std::string expected_output);
-bool testPolyMultiply(std::string x, std::string y, std::string expected_output);
-
-bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
-
-bool testKeyExpansion(std::string key, std::string expected[]);
-bool testCipher(std::string data, std::string k, std::string result, bool inverse=false);
-
-int main(int argc, char** argv)
-{
-	//if (argc < 2)
-	//{
-	//	log(DEBUG) << "Need arguments: <text to encrypt>";
-	//	exit(1);
-	//}
-
-	//char* input = argv[1];
-	//int size = strlen(input);
-	//char foo[4] = {'f','o','o',0};
-
-	if(runAllTests()) {
-		log(TEST_PASS) << "ALL TESTS PASSED\n";
-	} else {
-		log(TEST_FAIL) << "SOME TEST(S) FAILED";
-		return 0;
-	}
-
-	testCipher(sample_plaintext_128_1, sample_key_128_1, sample_ciphertext_128_1);
-	testCipher(sample_plaintext_128_2, sample_key_128_2, sample_ciphertext_128_2);
-	
-	testCipher(sample_ciphertext_128_1, sample_key_128_1, sample_plaintext_128_1, true);
-	testCipher(sample_ciphertext_128_2, sample_key_128_2, sample_plaintext_128_2, true);
-
-	return 0;
-}
 
 const int sub_bytes_total_samples = 3;
 const std::string sub_bytes_sample[][2] =
@@ -242,6 +251,16 @@ bool runAllTests() {
 		passed = passed && testMixColumns(mix_columns_sample[i][1], mix_columns_sample[i][0], true);
 	}
 
+	// Cipher tests:
+	for(i = 0; i < test_128_total_samples && passed; i++) {
+		passed = passed && testCipher(test_128[i].plain, test_128[i].key, test_128[i].cipher);
+	}
+
+	// InvCipher tests:
+	for(i = 0; i < test_128_total_samples && passed; i++) {
+		passed = passed && testCipher(test_128[i].cipher, test_128[i].key, test_128[i].plain, true);
+	}
+
 	return passed;
 	
 }
@@ -310,16 +329,13 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 	State *sKey = new State(key);
 	struct word* w = new word[4];
 	int q = 0;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			w[i].setByte(key[q], j);
 			q++;
 		}
+	}
 
-	log(DEBUG) << "Input: ";
-	state->display();
-	log(DEBUG) <<  "XOR: ";
-	sKey->display();
 
 	state->AddRoundKey(w, 4, 0);
 
