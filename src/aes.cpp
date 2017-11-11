@@ -1,8 +1,6 @@
 
 #include <iostream>
 #include <algorithm>
-//#include <stdio.h>
-//#include <string.h>
 #include "../includes/aes.h"
 
 using namespace std;
@@ -84,7 +82,6 @@ void AES::InvMixColumns(State *state) {
 }
 
 void AES::KeyExpansion() {
-//	printf("Key Expansion - Testing\n");
 	//temporary word to hold a value
 	struct word temp;
 
@@ -95,30 +92,21 @@ void AES::KeyExpansion() {
 		i++;
 	}
 
-
 	i = Nk;
 
 	while (i < Nb * (Nr + 1)) 
 	{
 		temp = w[i-1];
-//		log(DEBUG) << "temp: " << temp.hex();
 		if (i%Nk == 0)
 		{
 			temp.rotWord();
-//			log(DEBUG) << "After RotWord(): " << temp.hex();
 			temp.subWord();
-//			log(DEBUG) << "After SubWord(): " << temp.hex();
 			//need to use i-1 because index starts at 1 here.
 			temp = temp ^ rcon[(i-1)/Nk];
-//			log(DEBUG) << "Rcon[i/Nk]: " << rcon[(i-1)/Nk].hex();
-//			log(DEBUG) << "XOR with Rcon: " << temp.hex();
-			//temp = SubWord(RotWord(temp))^Rcon[i/Nk];
 		} else if (Nk > 6 && (i % Nk) == 4) {
 			temp.subWord();
 		}
-//		log(DEBUG) << "w[i-Nk]: " << w[i-Nk].hex();
 		w[i] = temp ^ w[i-Nk];
-//		log(DEBUG) << "w[i]: " << w[i].hex();
 		i++;
 	}
 	return;
@@ -128,26 +116,19 @@ void AES::KeyExpansion() {
  * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
  */
 void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned char w[]) {
-//	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
 	
 	// build the 'state' using input:
 	State *state = new State(plaintext);
-	
-	
-	/*printf("Initial 'state': \n");
-	state->display();
-	printf("\n");*/
-	
-	
-//	AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
+
+	// AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
 	AddRoundKey(state, 0);
 	log(DEBUG) << "After AddRoundKey, 0";
 	state->display();
 
 	 for (int round = 1; round < Nr; round++) {
-		SubBytes(state); // See Sec. 5.1.1
-		ShiftRows(state); // See Sec. 5.1.2
-		MixColumns(state); // See Sec. 5.1.3
+		SubBytes(state); // Sec. 5.1.1
+		ShiftRows(state); // Sec. 5.1.2
+		MixColumns(state); // Sec. 5.1.3
 		AddRoundKey(state, round);
 	 }
 
@@ -155,10 +136,6 @@ void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned
 	ShiftRows(state);
 
 	AddRoundKey(state, Nr);
-	
-	/*printf("Final 'state': \n");
-	state->display();
-	printf("\n");*/
 	
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), ciphertext);
@@ -169,37 +146,26 @@ void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned
  * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
  */
 void AES::InvCipher(unsigned char ciphertext[], unsigned char plaintext[], unsigned char w[]) {
-//	printf("AES properties: Nb = %d, Nk = %d, Nr = %d\n", Nb, Nk, Nr);
 
 	// build the 'state' using input:
 	State *state = new State(ciphertext);
 
-
-	/*printf("Initial 'state': \n");
-	state->display();
-	printf("\n");*/
-
-
-//	AddRoundKey(state, w[Nr*Nb, (Nr+1)(Nb-1)); // Sec. 5.3.4
+	// AddRoundKey(state, w[Nr*Nb, (Nr+1)(Nb-1)); // Sec. 5.3.4
 	AddRoundKey(state, Nr);
 	log(DEBUG) << "After AddRoundKey, 0";
 	state->display();
 
 	 for (int round = Nr-1; round > 0; round--) {
-		InvShiftRows(state); // See Sec. 5.4.1
-		InvSubBytes(state); // See Sec. 5.4.2
+		InvShiftRows(state); // Sec. 5.4.1
+		InvSubBytes(state); // Sec. 5.4.2
 		AddRoundKey(state, round); // Sec. 5.3.4
-		InvMixColumns(state); // See Sec. 5.3.3
+		InvMixColumns(state); // Sec. 5.3.3
 	 }
 
 	InvShiftRows(state);
 	InvSubBytes(state);
 
 	AddRoundKey(state, 0);
-
-	/*printf("Final 'state': \n");
-	state->display();
-	printf("\n");*/
 
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), plaintext);

@@ -3,11 +3,6 @@
 #include <stdlib.h>
 #include "../includes/state.h"
 
-// search google with key-word "aes xtime c++"
-// -- the first result contains 'xtime' macro that exactly matches this code.
-// So, we should not use this and write our own code instead.
-//#define xtime(x) ((x<<1) ^ (((x>>7 & 1) * 0x1b)))
-
 const char State::sbox[16][16][3] =
 {	{"63", "7c", "77", "7b", "f2", "6b", "6f", "c5", "30", "01", "67", "2b", "fe", "d7", "ab", "76"},
 	{"ca", "82", "c9", "7d", "fa", "59", "47", "f0", "ad", "d4", "a2", "af", "9c", "a4", "72", "c0"},
@@ -64,9 +59,6 @@ State::State(unsigned char input[])
 State::~State() {
 	free(s);
 }
-
-
-
 
 
 void State::update(unsigned char sp[4][4]) {
@@ -208,12 +200,7 @@ void State::MixColumns() {
 	}
 
 }	
-
-
-
 	
-
-
 /**
  * Performs 'AddRoundKey' operation on this state
  *
