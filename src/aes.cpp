@@ -6,6 +6,12 @@
 using namespace std;
 
 AES::AES(unsigned char key[], int keySize) {
+	/**
+	 * Secure Coding, SEI - DCL38-C. Use the correct syntax when declaring a flexible array member
+	 * Secure Coding, SEI - ARR32-C. Ensure size arguments for variable length arrays are in a valid range
+	 * 'key' is kept flexible instead of a fixed sized array because there might be keys of different size.
+	 */
+
 	log(DEBUG) << "Starting AES Service...";
 
 	currentround = 0;
@@ -40,6 +46,10 @@ AES::~AES() {
  * Perform 'SubBytes' operation on the state.
  */
 void AES::SubBytes(State *state) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
 	state->SubBytes();
 }
 
@@ -47,6 +57,10 @@ void AES::SubBytes(State *state) {
  * Perform 'ShiftRows' operation on the state.
  */
 void AES::ShiftRows(State *state) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
     state->ShiftRows();
 }
 
@@ -54,6 +68,10 @@ void AES::ShiftRows(State *state) {
  * Perform 'MixColumns' operation on the state.
  */
 void AES::MixColumns(State *state) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
     state->MixColumns();
 }
 
@@ -61,6 +79,10 @@ void AES::MixColumns(State *state) {
  * Perform 'AddRoundKey' operation on the state.
  */
 void AES::AddRoundKey(State *state, int round) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
     state->AddRoundKey(w, round, Nb);
 }
 
@@ -68,6 +90,10 @@ void AES::AddRoundKey(State *state, int round) {
  * Perform 'InvSubBytes' operation on the state.
  */
 void AES::InvSubBytes(State *state) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
 	state->InvSubBytes();
 }
 
@@ -75,6 +101,10 @@ void AES::InvSubBytes(State *state) {
  * Perform 'InvShiftRows' operation on the state.
  */
 void AES::InvShiftRows(State *state) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
     state->InvShiftRows();
 }
 
@@ -82,6 +112,10 @@ void AES::InvShiftRows(State *state) {
  * Perform 'InvMixColumns' operation on the state.
  */
 void AES::InvMixColumns(State *state) {
+	/**
+	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
+	 * Should check if 'state' is valid or NULL
+	 */
     state->InvMixColumns();
 }
 
@@ -92,6 +126,10 @@ void AES::KeyExpansion() {
 	int i = 0;
 	while (i < Nk)
 	{
+		/**
+		 *	Secure Coding, SEI - EXP30-C. Do not depend on the order of evaluation for side effects
+		 * used i++ in a separate statement instead of writing 'w[i++]'
+		 */
 		w[i] = word(key_[4*i],key_[4*i+1],key_[4*i+2], key_[4*i+3]);
 		i++;
 	}
@@ -110,6 +148,12 @@ void AES::KeyExpansion() {
 		} else if (Nk > 6 && (i % Nk) == 4) {
 			temp.subWord();
 		}
+		
+		/**
+		 *	Secure Coding, SEI - EXP30-C. Do not depend on the order of evaluation for side effects
+		 * used i++ in a separate statement instead of writing 'w[i++]'
+		 */
+		
 		w[i] = temp ^ w[i-Nk];
 		i++;
 	}

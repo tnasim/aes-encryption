@@ -33,6 +33,10 @@ unsigned char* util::hexToChar(std::string s) {
 	s.erase(end_pos, s.end());
 	
 	const char *hex_arr = s.c_str();
+	
+	/**
+	 *  Secure Coding, SEI - STR31-C. Guarantee that storage for strings has sufficient space for character data and the null terminator
+	 */
 	unsigned char* char_arr = new unsigned char[s.length()/2+1];
 	
 	for( unsigned i = 0, uchr ; i < s.length() ; i += 2 ) {
@@ -43,11 +47,20 @@ unsigned char* util::hexToChar(std::string s) {
 	
 	// TODO: ensure that 'char_arr' is deleted.
 	
+	/**
+	 *	Secure Coding, SEI - DCL30-C. Declare objects with appropriate storage durations
+	 */
+	// TODO: need to pass 'char_arr' from outside of the method.
 	return char_arr;
 	
 }
 
 unsigned char util::xTimes(unsigned char x) {
+	/**
+	 *	Secure Coding, SEI - INT34-C. Do not shift an expression by a negative number of bits or by greater than or equal to the number of bits that exist in the operand
+	 *  Secure Coding, SEI - INT35-C. Use correct integer precisions
+	 */
+	// TODO: need to check if INT34-C and INT35-C has been comlied or not.
 	unsigned char a = (unsigned char) 27; // "1b"
 	if((int)(x<<1) > 255) { // if xTimes exceeds 8 bits, mod with '1b' (hex)
 		x = x << 1;
@@ -91,6 +104,11 @@ void util::word::subWord()
 		};
 		
 		unsigned sub;
+		/**
+		 *	Secure Coding, SEI - ERR33-C. Detect and handle standard library errors (for sscanf, it might return EOF/negative)
+		 */
+		// TODO: need to check if sscanf was successful or not.
+		sscanf( sub_hex, "%2x", &sub );
 		sscanf( sub_hex, "%2x", &sub );
 		
 		// Update state-entry with substitute value.

@@ -48,6 +48,9 @@ const char State::sbox_inv[16][16][3]
  */
 State::State(unsigned char input[])
 {
+	/**
+	 *  Secure Coding, SEI - ARR30-C. Do not form or use out-of-bounds pointers or array subscripts
+	 */
 	int r, c; // c is actually Nb
 	for(r = 0; r < 4; r++) {
 		for(c = 0; c < 4; c++) {
@@ -63,6 +66,9 @@ State::~State() {
 
 void State::update(unsigned char sp[4][4]) {
 	int i, j;
+	/**
+	 *  Secure Coding, SEI - ARR30-C. Do not form or use out-of-bounds pointers or array subscripts
+	 */
 	for(i = 0; i < 4; i++) {
 		for(j = 0; j < 4; j++) {
 			s[i][j] = sp[i][j];
@@ -89,6 +95,12 @@ void State::swapBytes(state_pos b1, state_pos b2) {
  * first element in the array.
  */
 word State::getWord(int col) {
+	/**
+	 * Secure Coding, SEI - MSC11-C. Incorporate diagnostic tests using assertions (should not be used for validating user input)
+	 * Secure Coding, SEI - ARR30-C. Do not form or use out-of-bounds pointers or array subscripts
+	 */
+	
+	// TODO: must ensure that the value of 'col' is within permitted range. Should not use assert here.
 	struct word w = word(getByte(state_pos(col, 0)), getByte(state_pos(col,1)),
 		getByte(state_pos(col, 2)), getByte(state_pos(col, 3)));
 	return w;
@@ -105,6 +117,12 @@ void State::setWord(struct word w, int col) {
 unsigned char* State::getOutput() {
 	unsigned char* output;
 	int r, c;
+	
+	/**
+	 *	Secure Coding, SEI - ERR33-C. Detect and handle standard library errors (check return value from malloc --- it might be NULL)
+	 */
+	// TODO: need to check whether the allocated space is valid or NULL.
+	
 	output = (unsigned char*) malloc(sizeof(unsigned char)*16);
 	
 	for(r = 0; r < 4; r++) {
@@ -112,6 +130,10 @@ unsigned char* State::getOutput() {
 			output[r+4*c] = s[r][c];
 		}
 	}
+	/**
+	 *	Secure Coding, SEI - DCL30-C. Declare objects with appropriate storage durations
+	 */
+	// TODO: need to pass 'output' from outside of the method.
 	
 	/**
 	 * Secure Coding, SEI - MEM51-CPP. "Properly deallocate dynamically allocated resources"
@@ -143,6 +165,10 @@ void State::SubBytes() {
 			};
 			
 			unsigned sub;
+			/**
+			 *	Secure Coding, SEI - ERR33-C. Detect and handle standard library errors (for sscanf, it might return EOF/negative)
+			 */
+			// TODO: need to check if sscanf was successful or not.
 			sscanf( sub_hex, "%2x", &sub );
 			
 			// Update state-entry with substitute value.
