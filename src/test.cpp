@@ -350,6 +350,9 @@ bool testAddRoundKey(std::string input, std::string expected_output) {
 		log(TEST_FAIL) << "\t - FAILED";
 		passed = false;
 	}
+	
+	// TODO: delete 'state', 'sKey' and 'w'.
+	
 //	delete(state);
 //	delete(word);
 //	free(out);
@@ -409,6 +412,7 @@ bool testTransformation(trans_type transformation, std::string input, std::strin
 		passed = false;
 	}
 	free(out);
+	// TODO: delete 'state' object ... and also the 'in'/'out' pointers may need to be deleted/freed.
 
 	return passed;
 }
@@ -429,6 +433,8 @@ bool testPolyMultiply(std::string x, std::string y, std::string expected_output)
 		log(TEST) << "\t - Expected:\t" << expected_output;
 		log(TEST_FAIL) << "\t - test polyMulti({" << x << "}, {" << y << "}) FAILED";
 	}
+	
+	// TODO: delete 'a' and 'b'
 
 	return passed;
 }

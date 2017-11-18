@@ -40,6 +40,9 @@ unsigned char* util::hexToChar(std::string s) {
 		char_arr[i/2] = (unsigned char)uchr; // save as char
 	}
 	char_arr[s.length()/2+1] = '\0';
+	
+	// TODO: ensure that 'char_arr' is deleted.
+	
 	return char_arr;
 	
 }

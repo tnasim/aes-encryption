@@ -113,6 +113,14 @@ unsigned char* State::getOutput() {
 		}
 	}
 	
+	/**
+	 * Secure Coding, SEI - MEM51-CPP. "Properly deallocate dynamically allocated resources"
+	 */
+	
+	// TODO: must ensure that the 'output' gets 'free'ed after it is no longer needed.
+	//		we can use std::malloc() and then std::free()
+	//	or we can take 'output' as an input argument of this method and
+	//		make it the responsibility of the caller to free the memory after it is no longer needed.
 	return output;
 }
 

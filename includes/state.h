@@ -1,3 +1,6 @@
+/** Secure Coding, SEI - DCL51-CPP:
+* we didn't define header guards that starts with an underscore or contains a double underscore in the middle.
+*/
 #ifndef STATE_H
 #define STATE_H
 #include "../src/util/util.h"
@@ -40,6 +43,7 @@ public:
 	/**
 	 * Takes in the input byte array and initializes the 'state' array with this input.
 	 */
+	 // TODO: should throw some sort of exception if the input[] is not of appropriate size.
 	State(unsigned char input[]);
 	
 	~State();
@@ -60,8 +64,13 @@ public:
 	 * Build an array and return the pointer to the
 	 * first element in the array.
 	 */
+	 /**
+	 * Secure Coding, SEI - CTR50-CPP. Guarantee that container indices and iterators are within the valid range
+	 */
+	 // TODO: type of 'col' should be 'size_t' to avoid negative arguments.
 	struct word getWord(int col);
 
+	 // TODO: type of 'col' should be 'size_t' to avoid negative arguments. CTR50-CPP
 	void setWord(struct word w,int col);
 	
 	unsigned char* getOutput();
@@ -84,6 +93,7 @@ public:
 	/**
 	 * Performs 'AddRoundKey' operation on this state
 	 */
+	 // TODO: type of 'round' and 'Nb' should be 'size_t' to avoid negative arguments. CTR50-CPP
 	void AddRoundKey(struct word w[], int round, int Nb);
 	
 	/**

@@ -29,7 +29,11 @@ AES::AES(unsigned char key[], int keySize) {
 }
 
 AES::~AES() {
+	/**
+	 * Secure Coding, SEI - MEM51-CPP. "Properly deallocate dynamically allocated resources"
+	 */
 	free(w);
+	// TODO: free(rcon)
 }
 
 /**
@@ -118,6 +122,10 @@ void AES::KeyExpansion() {
 void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[],
 		unsigned char w[]) {
 
+	/**
+	 *	Secure Coding, SEI - MEM52-CPP. Detect and handle memory allocation errors.
+	 */
+	// TODO: need to handle if there is any memory allocation error. (use std::nothrow or handle std::bad_alloc exception.)
 	// build the 'state' using input:
 	State *state = new State(plaintext);
 
@@ -138,6 +146,11 @@ void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[],
 
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), ciphertext);
+	
+	/**
+	* Secure Coding, SEI - MEM51-CPP. Properly deallocate dynamically allocated resources
+	*/
+	// TODO: properly deallocate the memory allocated for 'state' object. (use 'delete' since it has been allocated using 'new')
 }
 
 
@@ -147,6 +160,10 @@ void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[],
 void AES::InvCipher(unsigned char ciphertext[], unsigned char plaintext[],
 		unsigned char w[]) {
 
+	/**
+	 *	Secure Coding, SEI - MEM52-CPP. Detect and handle memory allocation errors.
+	 */
+	// TODO: need to handle if there is any memory allocation error. (use std::nothrow or handle std::bad_alloc exception.)
 	// build the 'state' using input:
 	State *state = new State(ciphertext);
 
@@ -167,4 +184,9 @@ void AES::InvCipher(unsigned char ciphertext[], unsigned char plaintext[],
 
 	unsigned char* out = state->getOutput();
 	std::copy(out, (out + AES::WORD_SIZE), plaintext);
+	
+	/**
+	 * Secure Coding, SEI - MEM51-CPP. Properly deallocate dynamically allocated resources
+	 */
+	// TODO: properly deallocate the memory allocated for 'state' object. (use 'delete' since it has been allocated using 'new')
 }

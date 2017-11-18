@@ -26,6 +26,11 @@ private:
 	inline void initKey(unsigned char key[]) {
 		std::copy(key, key+32, key_);
 
+		/**
+		*	Secure Coding, SEI - MEM52-CPP. Detect and handle memory allocation errors.
+		*/
+		// TODO: need to handle if there is any memory allocation error. (use std::nothrow or handle std::bad_alloc exception.)
+		
 		//The only thing non-deterministic about this is how many rounds should be used.
 		//there are. They rcon is always (hex) 01, 02, 04, 08, 10, 20, 40, 80, 1b, 36.. etc
 		//arranged as a array of words, the last 3 bytes of the word are ignored. 
@@ -110,6 +115,7 @@ public:
 	/**
 	 * Constructor - takes the key and initializes
 	 **/
+	 // TODO: should use 'keySize' as an enum so that only specific values can be passed. Also the constructor should throw some sort of exception if the key is not of correct size.
 	AES(unsigned char key[], int keySize);
 
 	~AES();
@@ -117,11 +123,13 @@ public:
     /**
      * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
      */
+	// TODO: should change the method signature --- 'w' is not needed here
     void Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned char w[]);
 
     /**
 	 * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
 	 */
+	// TODO: should change the method signature --- 'w' is not needed here
 	void InvCipher(unsigned char ciphertext[], unsigned char plaintext[], unsigned char w[]);
      
 
