@@ -135,6 +135,23 @@ We have learnt the following important aspects of cryptography through the imple
 \section{Secure Coding}
 Secure Coding
 
+\section{Attacks on AES 128}
+
+\begin{itemize}
+	\item \textbf{Square Attacks:}
+	The square property of AES was observed by the designers : if exactly one byte in the plaintext is modified, the exactly 4 bytes are modified after one round and all 16 bytes are modified after two more rounds. Hence, for a set of 256 plaintexts where each byte at an arbitrary index is a distinct value and all other bytes are equal, the XOR sum of the 256 intermediate states after 3 rounds of AES will be zero.(will be needing more content. the research paper has a lot of stuff. not sure what to include.)
+	
+	\item \textbf{Local Collision in AES:}
+	The idea of this attack is to inject a difference in the key, control the expansions(cause disturbances) and correct the disturbance in the next injection. The differences spread across other subkeys and form a key schedule difference.
+	(the research paper enlists a lot of content about this attack as well. Also the project requirement document states that we should be able to identify parts of code that are designed to handle attacks. not sure how to tackle that.)
+	
+	
+	
+
+	
+	
+\end{itemize}
+
 \section{Summary}
 Summary
 
