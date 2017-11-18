@@ -55,6 +55,13 @@ int main(int argc, char** argv)
 	//int size = strlen(input);
 	//char foo[4] = {'f','o','o',0};
 
+	// TODO: Generate Random Key.
+	
+	/**
+	 * Use a random key generator to generator the key. Follow the secure SEI CERT C++ Coding guidelines at: https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88046554
+	 */
+	
+	
 	if(runAllTests()) {
 		log(TEST_PASS) << "ALL TESTS PASSED\n";
 	} else {
