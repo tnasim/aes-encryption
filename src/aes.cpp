@@ -172,6 +172,11 @@ void AES::Cipher(unsigned char plaintext[], unsigned char ciphertext[],
 	// TODO: need to handle if there is any memory allocation error. (use std::nothrow or handle std::bad_alloc exception.)
 	// build the 'state' using input:
 	State *state = new State(plaintext);
+	
+	/**
+	 *	Secure Coding, SEI - ERR05-C. Application-independent code should provide error detection without dictating error handling
+	 */
+	// TODO: need some error handling. If state initialization is failed.
 
 	// AddRoundKey(state, w[0, Nb-1); // Sec. 5.1.4
 	AddRoundKey(state, 0);
