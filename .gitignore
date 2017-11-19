@@ -43,3 +43,10 @@ bin/*
 .cproject
 .project
 .settings/
+
+# LaTeX extensions
+*.aux
+*.log
+*.out
+*.pdf
+*.gz

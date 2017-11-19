@@ -28,6 +28,7 @@ namespace util
 			s.erase(end_pos, s.end());
 
 			const char *hex_arr = s.c_str();
+			// TODO: 'char_arr' is not used probably. So, need to remove this code.
 			unsigned char* char_arr = new unsigned char[s.length()/2+1];
 
 			for( unsigned i = 0, uchr ; i < s.length() ; i += 2 ) {
@@ -67,6 +68,9 @@ namespace util
 
 		void rotWord();
 
+		/**
+		 * Secure Coding, SEI - OOP57-CPP. Prefer special member functions and overloaded operators to C Standard Library functions
+		 */
 		struct word operator^(unsigned char b[]);
 
 		struct word operator^(word w);
@@ -79,6 +83,8 @@ namespace util
 	std::string charToHex(unsigned char*, int size);
 	std::string charToHex(unsigned char value);
 	unsigned char* hexToChar(std::string s);
+	unsigned char xTimes(unsigned char x);
+	unsigned char polyMultiply(unsigned char x, unsigned char y);
 }
 
 #endif

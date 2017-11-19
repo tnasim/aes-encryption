@@ -7,10 +7,17 @@
 #include "../includes/state.h"
 #include "../src/util/util.h"
 
+#include "../src/util/logger.h"
+
 using namespace std;
 using namespace util;
 
 const unsigned int CONSTANT = 0x11b;
+enum KEY_SIZE {
+	KEY_SIZE_128 = 128,
+	KEY_SIZE_192 = 192,
+	KEY_SIZE_256 = 256
+};
 
 class AES {
     
@@ -24,11 +31,16 @@ private:
 	inline void initKey(unsigned char key[]) {
 		std::copy(key, key+32, key_);
 
+		/**
+		*	Secure Coding, SEI - MEM52-CPP. Detect and handle memory allocation errors.
+		*/
+		// TODO: need to handle if there is any memory allocation error. (use std::nothrow or handle std::bad_alloc exception.)
+		
 		//The only thing non-deterministic about this is how many rounds should be used.
 		//there are. They rcon is always (hex) 01, 02, 04, 08, 10, 20, 40, 80, 1b, 36.. etc
 		//arranged as a array of words, the last 3 bytes of the word are ignored. 
 		//example: rcon[0] = {0x01, 0x00, 0x00, 0x00}
-//		cout << "Creating Round Constants..." << endl;
+//		log(DEBUG) << "Creating Round Constants...";
 		//initialize round constant array
 		rcon = new struct word[Nr];
 		for (int i = 0; i < Nr; i++) 
@@ -44,7 +56,7 @@ private:
 				value = (value<<1) ^ (CONSTANT & -(value>>7));
 				rcon[i] = word(value, 0x00, 0x00, 0x00);
 			}
-//			cout << "Constant " << (i+1) << ": " << charToHex(rcon[i].getByte(0)) << endl;
+//			log(DEBUG) << "Constant " << (i+1) << ": " << charToHex(rcon[i].getByte(0));
 		}
 	}
 
@@ -78,7 +90,22 @@ private:
     /**
      * Perform 'AddRoundKey' operation on the state.
      */
-    void AddRoundKey(State *state, int round);
+    void AddRoundKey(State *state, size_t round);
+
+    /**
+	 * Perform 'InvSubBytes' operation on the state.
+	 */
+	void InvSubBytes(State *state);
+
+	/**
+	 * Perform 'InvShiftRows' operation on the state.
+	 */
+	void InvShiftRows(State *state);
+
+	/**
+	 * Perform 'InvMixColumns' operation on the state.
+	 */
+	void InvMixColumns(State *state);
 	
 	/**
 	 * Expands key 
@@ -93,14 +120,22 @@ public:
 	/**
 	 * Constructor - takes the key and initializes
 	 **/
-	AES(unsigned char key[], int keySize);
+	 // TODO: should use 'keySize' as an enum so that only specific values can be passed. Also the constructor should throw some sort of exception if the key is not of correct size.
+	AES(unsigned char key[], KEY_SIZE keySize);
 
 	~AES();
 	
     /**
      * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
      */
-    void Cipher(unsigned char input[], unsigned char output[], unsigned char w[]);
+	// TODO: should change the method signature --- 'w' is not needed here
+    void Cipher(unsigned char plaintext[], unsigned char ciphertext[], unsigned char w[]);
+
+    /**
+	 * Perform the AES Cipher operation on 'input' and puts the resulting cipher in 'output'.
+	 */
+	// TODO: should change the method signature --- 'w' is not needed here
+	void InvCipher(unsigned char ciphertext[], unsigned char plaintext[], unsigned char w[]);
      
 
 };
