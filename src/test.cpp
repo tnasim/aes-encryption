@@ -41,7 +41,7 @@ bool testPolyMultiply(std::string x, std::string y, std::string expected_output)
 bool testTransformation(trans_type transformation, std::string input, std::string expected_output, bool inverse=false);
 
 bool testKeyExpansion(std::string key, std::string expected[]);
-bool testCipher(std::string data, std::string k, std::string result, bool inverse=false);
+bool testCipher(std::string data, std::string k, KEY_SIZE key_size, std::string result, bool inverse=false);
 
 int main(int argc, char** argv)
 {
@@ -73,16 +73,16 @@ int main(int argc, char** argv)
 }
 
 
-const int KEY_SIZE = 128;
-
 struct test_set {
 	std::string plain;
 	std::string cipher;
 	std::string key;
-	test_set(std::string p, std::string c, std::string k) {
+	KEY_SIZE key_size;
+	test_set(std::string p, std::string c, std::string k, KEY_SIZE keySize) {
 		plain = p;
 		cipher = c;
 		key = k;
+		key_size = keySize;
 	}
 };
 
@@ -92,11 +92,13 @@ test_set test_128[] =
 		test_set(
 				"32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34", // plain
 				"39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32", // cipher
-				"2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c"), // key
+				"2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c",
+				KEY_SIZE_128), // key
 		test_set(
 				"00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff", // plain
 				"69 c4 e0 d8 6a 7b 04 30 d8 cd b7 80 70 b4 c5 5a", // cipher
-				"00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f") // key
+				"00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f",
+				KEY_SIZE_128) // key
 	};
 
 std::string sample_key_128_1 			= "2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c";
@@ -261,19 +263,19 @@ bool runAllTests() {
 
 	// Cipher tests:
 	for(i = 0; i < test_128_total_samples && passed; i++) {
-		passed = passed && testCipher(test_128[i].plain, test_128[i].key, test_128[i].cipher);
+		passed = passed && testCipher(test_128[i].plain, test_128[i].key, test_128[i].key_size, test_128[i].cipher);
 	}
 
 	// InvCipher tests:
 	for(i = 0; i < test_128_total_samples && passed; i++) {
-		passed = passed && testCipher(test_128[i].cipher, test_128[i].key, test_128[i].plain, true);
+		passed = passed && testCipher(test_128[i].cipher, test_128[i].key, test_128[i].key_size, test_128[i].plain, true);
 	}
 
 	return passed;
 	
 }
 
-bool testCipher(std::string data, std::string k, std::string result, bool inverse) {
+bool testCipher(std::string data, std::string k, KEY_SIZE key_size, std::string result, bool inverse) {
 	bool passed = false;
 	log(TEST) << "test - " << (inverse?"Inv":"") << "Cipher() -->";
 
@@ -292,7 +294,7 @@ bool testCipher(std::string data, std::string k, std::string result, bool invers
 	unsigned char w[16] = {0};
 
 	// Test AES class:
-	AES *aes = new AES(key, KEY_SIZE);
+	AES *aes = new AES(key, key_size);
 	if(!inverse)
 		aes->Cipher(in, out, w);
 	else
@@ -372,7 +374,7 @@ bool testKeyExpansion(std::string key, std::string expected[]) {
 	log(TEST) << "test - KeyExpansion() -->";
 	log(TEST) << "\tInput key:  " << key;
 
-	if( keyExpansionTest::test(key, expected, KEY_SIZE) ) {
+	if( keyExpansionTest::test(key, expected, KEY_SIZE_128) ) {
 		log(TEST_PASS) << "\t - test KeyExpansion() PASSED\n";
 		passed = true;
 	} else {

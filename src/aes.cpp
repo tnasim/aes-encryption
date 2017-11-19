@@ -5,11 +5,12 @@
 
 using namespace std;
 
-AES::AES(unsigned char key[], int keySize) {
+AES::AES(unsigned char key[], KEY_SIZE keySize) {
 	/**
 	 * Secure Coding, SEI - DCL38-C. Use the correct syntax when declaring a flexible array member
 	 * Secure Coding, SEI - ARR32-C. Ensure size arguments for variable length arrays are in a valid range
 	 * 'key' is kept flexible instead of a fixed sized array because there might be keys of different size.
+	 * KEY_SIZE enum has been used instead of 'int' or other size so that only specific values can be passed as key size (128, 192 and 256)
 	 */
 
 	log(DEBUG) << "Starting AES Service...";

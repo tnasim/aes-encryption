@@ -3,27 +3,19 @@
 # and operations used throughout the project
 */
 
-#include "keyExpansionTest.h"
 #include <iostream>
 #include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
 #include <string>
-//#include "../src/util/util.h"
 #include "../includes/state.h"
 
-// this was necessary to access private properties of AES class.
-// I could not find better way to do this.
-#define private public
-
-#include "../includes/aes.h"
-
-const int KEY_SIZE = 128;
+#include "keyExpansionTest.h"
 
 using namespace util;
 
-bool keyExpansionTest::test(std::string key_hex, std::string expected_key_expansion[], int key_size) {
+bool keyExpansionTest::test(std::string key_hex, std::string expected_key_expansion[], KEY_SIZE key_size) {
 	bool passed = true;
 
 	unsigned char* key = hexToChar(key_hex);

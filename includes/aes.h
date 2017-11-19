@@ -121,7 +121,7 @@ public:
 	 * Constructor - takes the key and initializes
 	 **/
 	 // TODO: should use 'keySize' as an enum so that only specific values can be passed. Also the constructor should throw some sort of exception if the key is not of correct size.
-	AES(unsigned char key[], int keySize);
+	AES(unsigned char key[], KEY_SIZE keySize);
 
 	~AES();
 	
