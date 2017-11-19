@@ -14,8 +14,17 @@
 #include "../includes/state.h"
 #include "../includes/aes.h"
 #include "../test/keyExpansionTest.h"
+#include "util/keyGenerator.h"
+
+#include <unistd.h>
+#include <fcntl.h>
+
+/* Not technically required, but needed on some UNIX distributions */
+#include <sys/types.h>
+#include <sys/stat.h>
 
 using namespace util;
+using namespace keyGenerator;
 using namespace keyExpansionTest;
 
 /** Set the log level */
@@ -30,6 +39,19 @@ logLevel LOG_LEVEL = TEST;
 enum trans_type { SUB_BYTES, SHIFT_ROWS, MIX_COLUMNS, ADD_ROUND_KEY};
 std::string trans_name[] = { "SubBytes", "ShiftRows", "MixColumns", "AddRoundKey"};
 
+struct test_set {
+	std::string plain;
+	std::string cipher;
+	std::string key;
+	KEY_SIZE key_size;
+	test_set(std::string p, std::string c, std::string k, KEY_SIZE keySize) {
+		plain = p;
+		cipher = c;
+		key = k;
+		key_size = keySize;
+	}
+};
+
 bool runAllTests();
 bool testSubBytes(std::string input, std::string expected_output, bool inverse=false);
 bool testShiftRows(std::string input, std::string expected_output, bool inverse=false);
@@ -42,6 +64,8 @@ bool testTransformation(trans_type transformation, std::string input, std::strin
 
 bool testKeyExpansion(std::string key, std::string expected[]);
 bool testCipher(std::string data, std::string k, KEY_SIZE key_size, std::string result, bool inverse=false);
+bool testCipherDecipher_Random(KEY_SIZE key_size);
+test_set getRandomTestData(KEY_SIZE key_size);
 
 int main(int argc, char** argv)
 {
@@ -61,6 +85,8 @@ int main(int argc, char** argv)
 	 * Use a random key generator to generator the key. Follow the secure SEI CERT C++ Coding guidelines at: https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=88046554
 	 */
 	
+	/*test_set test_data = getRandomTestData(KEY_SIZE_128);
+	cout << "plain: " << test_data.plain << endl << "key: " << test_data.key << endl;*/
 	
 	if(runAllTests()) {
 		log(TEST_PASS) << "ALL TESTS PASSED\n";
@@ -71,20 +97,6 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-
-
-struct test_set {
-	std::string plain;
-	std::string cipher;
-	std::string key;
-	KEY_SIZE key_size;
-	test_set(std::string p, std::string c, std::string k, KEY_SIZE keySize) {
-		plain = p;
-		cipher = c;
-		key = k;
-		key_size = keySize;
-	}
-};
 
 const int test_128_total_samples = 2;
 test_set test_128[] =
@@ -271,6 +283,7 @@ bool runAllTests() {
 		passed = passed && testCipher(test_128[i].cipher, test_128[i].key, test_128[i].key_size, test_128[i].plain, true);
 	}
 
+	passed = passed && testCipherDecipher_Random(KEY_SIZE_128);
 	return passed;
 	
 }
@@ -311,6 +324,50 @@ bool testCipher(std::string data, std::string k, KEY_SIZE key_size, std::string 
 		log(TEST) << "\t - Output:\t" << result_hex;
 		log(TEST) << "\t - Expected:\t" << result;
 		log(TEST_FAIL) << "\t - test " << (inverse?"Inv":"") << "Cipher() FAILED";
+		passed = false;
+	}
+
+	return passed;
+}
+
+bool testCipherDecipher_Random(KEY_SIZE key_size) {
+	bool passed = false;
+	log(TEST) << "test - testCipherDecipher_Random() -->";
+
+	test_set test_data = getRandomTestData(key_size);
+	unsigned char* key = util::hexToChar(test_data.key);
+
+	std::string key_str = util::charToHex(key, 16);
+	log(TEST) << "\tKey:\t" << key_str;
+
+	log(TEST) << "\tData:\t" << test_data.plain;
+
+
+	// make char (byte-) array from input
+	unsigned char *in = util::hexToChar(test_data.plain);
+
+	unsigned char out[16] = {0};
+	unsigned char in2[16] = {0};
+	unsigned char w[16] = {0};
+
+	// Test AES class:
+	AES *aes = new AES(key, key_size);
+
+	aes->Cipher(in, out, w);
+
+	aes->InvCipher(out, in2, w);
+
+	std::string result_hex = util::charToHex(in2, 16);
+
+	if(!result_hex.compare(test_data.plain)) {
+		log(TEST) << "\t - Output:\t" << result_hex;
+		log(TEST) << "\t - Expected:\t" << test_data.plain;
+		log(TEST_PASS) << "\t - testCipherDecipher_Random()  PASSED !!";
+		passed = true;
+	} else {
+		log(TEST) << "\t - Output:\t" << result_hex;
+		log(TEST) << "\t - Expected:\t" << test_data.plain;
+		log(TEST_FAIL) << "\t - testCipherDecipher_Random() FAILED";
 		passed = false;
 	}
 
@@ -463,4 +520,20 @@ bool testXTimes(std::string input, std::string expected_output) {
 	}
 
 	return passed;
+}
+
+test_set getRandomTestData(KEY_SIZE key_size) {
+	size_t key_len = key_size/8;
+	size_t data_len = key_size/8;
+	unsigned char key[(size_t)key_len];
+	unsigned char data[(size_t)data_len];
+
+	keyGenerator::generateRandomKey(key_len, key);
+	std::string key_hex = util::charToHex(key, key_len);
+
+	keyGenerator::generateRandomKey(data_len, data);
+	std::string data_hex = util::charToHex(data, data_len);
+
+	test_set test_data = test_set(key_hex, "", data_hex, key_size);
+	return test_data;
 }
