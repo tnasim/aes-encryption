@@ -94,7 +94,7 @@ void State::swapBytes(state_pos b1, state_pos b2) {
  * Build an array and return the pointer to the
  * first element in the array.
  */
-word State::getWord(int col) {
+word State::getWord(size_t col) {
 	/**
 	 * Secure Coding, SEI - MSC11-C. Incorporate diagnostic tests using assertions (should not be used for validating user input)
 	 * Secure Coding, SEI - ARR30-C. Do not form or use out-of-bounds pointers or array subscripts
@@ -106,7 +106,7 @@ word State::getWord(int col) {
 	return w;
 }
 
-void State::setWord(struct word w, int col) {
+void State::setWord(struct word w, size_t col) {
 	for (int i = 0; i < 4; i++)
 		s[i][col] = w.getByte(i);
 }
@@ -240,7 +240,7 @@ void State::MixColumns() {
  *
  * Reference: FIPS-197, section 5.1.4
  */
-void State::AddRoundKey(struct word w[], int round, int Nb) {
+void State::AddRoundKey(struct word w[], size_t round, size_t Nb) {
 	//for each column
 	for (int c = 0; c < 4; c++) {
 		struct word key = w[round*Nb + c];

@@ -13,6 +13,11 @@ using namespace std;
 using namespace util;
 
 const unsigned int CONSTANT = 0x11b;
+enum KEY_SIZE {
+	KEY_SIZE_128 = 128,
+	KEY_SIZE_192 = 192,
+	KEY_SIZE_256 = 256
+};
 
 class AES {
     
@@ -85,7 +90,7 @@ private:
     /**
      * Perform 'AddRoundKey' operation on the state.
      */
-    void AddRoundKey(State *state, int round);
+    void AddRoundKey(State *state, size_t round);
 
     /**
 	 * Perform 'InvSubBytes' operation on the state.

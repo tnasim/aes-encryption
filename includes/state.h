@@ -10,9 +10,9 @@
 
 using namespace util;
 struct state_pos {
-	state_pos(int col, int row) {this->col = col; this->row = row;}
-	int col;
-	int row;
+	state_pos(size_t col, size_t row) {this->col = col; this->row = row;}
+	size_t col;
+	size_t row;
 
 };
 
@@ -68,10 +68,10 @@ public:
 	 * Secure Coding, SEI - CTR50-CPP. Guarantee that container indices and iterators are within the valid range
 	 */
 	 // TODO: type of 'col' should be 'size_t' to avoid negative arguments.
-	struct word getWord(int col);
+	struct word getWord(size_t col);
 
 	 // TODO: type of 'col' should be 'size_t' to avoid negative arguments. CTR50-CPP
-	void setWord(struct word w,int col);
+	void setWord(struct word w,size_t col);
 	
 	unsigned char* getOutput();
 	
@@ -94,7 +94,7 @@ public:
 	 * Performs 'AddRoundKey' operation on this state
 	 */
 	 // TODO: type of 'round' and 'Nb' should be 'size_t' to avoid negative arguments. CTR50-CPP
-	void AddRoundKey(struct word w[], int round, int Nb);
+	void AddRoundKey(struct word w[], size_t round, size_t Nb);
 	
 	/**
 	 * Performs 'SubBytes' operation on this state

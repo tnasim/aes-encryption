@@ -78,7 +78,7 @@ void AES::MixColumns(State *state) {
 /**
  * Perform 'AddRoundKey' operation on the state.
  */
-void AES::AddRoundKey(State *state, int round) {
+void AES::AddRoundKey(State *state, size_t round) {
 	/**
 	 * Secure Coding, SEI - EXP33-C. Do not read uninitialized memory
 	 * Should check if 'state' is valid or NULL
