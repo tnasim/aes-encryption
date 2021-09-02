@@ -1,4 +1,4 @@
-# AES Encryption implementation.
+# AES Encryption Implementation
 
 This is an implementation of the Advanced Encryption Standard.
 
